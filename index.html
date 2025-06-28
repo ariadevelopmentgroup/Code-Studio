@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Studio Pro</title>
+    <title>Code Studio Pro IDE </title>
     <style>
         * {
             margin: 0;
@@ -13,8 +13,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: #1e1e1e;
+            color: #ffffff;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -22,48 +22,47 @@
             transition: all 0.3s ease;
         }
 
-        /* CSS Variables for Theming */
-        :root {
-            --bg-primary: #1e1e1e;
-            --bg-secondary: #2d2d30;
-            --bg-tertiary: #252526;
-            --bg-quaternary: #37373d;
-            --border-color: #3e3e42;
-            --text-primary: #ffffff;
-            --text-secondary: #cccccc;
-            --text-muted: #969696;
-            --accent-color: #007acc;
-            --accent-hover: #005a9e;
-            --success-color: #4caf50;
-            --error-color: #f48771;
-            --warning-color: #ffa500;
-            --danger-color: #FF0000;
-            --run-color: #32CD32;
-            --terminal-bg: #0c0c0c;
-            --terminal-text: #00ff00;
+        body.light-mode {
+            background: #ffffff;
+            color: #000000;
         }
 
-        /* Light Theme */
-        body.light-theme {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f3f3f3;
-            --bg-tertiary: #fafafa;
-            --bg-quaternary: #e8e8e8;
-            --border-color: #d1d1d1;
-            --text-primary: #333333;
-            --text-secondary: #555555;
-            --text-muted: #777777;
-            --accent-color: #0066cc;
-            --accent-hover: #004499;
-            --terminal-bg: #f5f5f5;
-            --terminal-text: #333333;
+        body.light-mode .header,
+        body.light-mode .window,
+        body.light-mode .window-header,
+        body.light-mode .footer,
+        body.light-mode .settings-panel {
+            background: #f5f5f5;
+            color: #000000;
+            border-color: #e0e0e0;
+        }
+
+        body.light-mode .terminal-container {
+            background: #f8f8f8;
+            color: #000000;
+        }
+
+        body.light-mode .terminal-output {
+            color: #000000;
+        }
+
+        body.light-mode .command-success {
+            color: #008000;
+        }
+
+        body.light-mode .command-error {
+            color: #ff0000;
+        }
+
+        body.light-mode .command-info {
+            color: #0066cc;
         }
 
         /* Header Styles */
         .header {
-            background: var(--bg-secondary);
+            background: #2d2d30;
             padding: 1rem 2rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #3e3e42;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -73,7 +72,7 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--accent-color);
+            color: #007acc;
         }
 
         .header-controls {
@@ -83,7 +82,7 @@
         }
 
         .btn {
-            background: var(--accent-color);
+            background: #007acc;
             color: white;
             border: none;
             padding: 0.5rem 1rem;
@@ -95,7 +94,7 @@
         }
 
         .btn:hover {
-            background: var(--accent-hover);
+            background: #005a9e;
         }
 
         .btn:disabled {
@@ -104,7 +103,7 @@
         }
 
         .btn.danger {
-            background: var(--danger-color);
+            background: #FF0000;
         }
 
         .btn.danger:hover {
@@ -112,7 +111,7 @@
         }
 
         .btn.run {
-            background: var(--run-color);
+            background: #32CD32;
         }
 
         .btn.run:hover {
@@ -120,12 +119,11 @@
         }
 
         .btn.settings {
-            background: var(--bg-quaternary);
-            color: var(--text-primary);
+            background: #9c27b0;
         }
 
         .btn.settings:hover {
-            background: #464647;
+            background: #7b1fa2;
         }
 
         .font-controls {
@@ -134,8 +132,8 @@
         }
 
         .font-btn {
-            background: var(--bg-quaternary);
-            color: var(--text-primary);
+            background: #37373d;
+            color: white;
             border: none;
             padding: 0.3rem 0.6rem;
             border-radius: 3px;
@@ -143,11 +141,23 @@
             font-size: 0.8rem;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 0.3rem;
         }
 
         .font-btn:hover {
             background: #464647;
+        }
+
+        .eye-icon {
+            font-size: 0.7rem;
+        }
+
+        .eye-icon.small {
+            font-size: 0.6rem;
+        }
+
+        .eye-icon.large {
+            font-size: 0.9rem;
         }
 
         /* Security indicator */
@@ -161,7 +171,7 @@
         }
 
         .security-indicator.safe {
-            background: var(--success-color);
+            background: #4caf50;
         }
 
         /* Main Content - 4 Window Layout */
@@ -172,12 +182,11 @@
             grid-template-rows: 1fr 4px 1fr;
             gap: 0;
             overflow: hidden;
-            position: relative;
         }
 
         .window {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
+            background: #252526;
+            border: 1px solid #3e3e42;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -191,21 +200,15 @@
         }
 
         .window-header {
-            background: var(--bg-secondary);
+            background: #2d2d30;
             padding: 0.5rem 1rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #3e3e42;
             font-weight: 500;
             font-size: 0.9rem;
-            color: var(--text-secondary);
+            color: #cccccc;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 0.5rem;
-        }
-
-        .window-title {
-            display: flex;
-            align-items: center;
             gap: 0.5rem;
         }
 
@@ -214,19 +217,30 @@
             gap: 0.5rem;
         }
 
-        .window-control-btn {
-            background: transparent;
+        .window-btn {
+            background: #37373d;
+            color: white;
             border: none;
-            color: var(--text-muted);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
             cursor: pointer;
-            padding: 0.2rem 0.4rem;
-            border-radius: 2px;
             font-size: 0.7rem;
         }
 
-        .window-control-btn:hover {
-            background: var(--bg-quaternary);
-            color: var(--text-primary);
+        .window-btn:hover {
+            background: #464647;
+        }
+
+        .window-btn.hide {
+            background: #ff6b6b;
+        }
+
+        .window-btn.show {
+            background: #4caf50;
+        }
+
+        .window-btn.save {
+            background: #007acc;
         }
 
         .window-content {
@@ -245,7 +259,7 @@
         .resize-handle-v {
             grid-column: 2;
             grid-row: 1 / 4;
-            background: var(--border-color);
+            background: #3e3e42;
             cursor: col-resize;
             position: relative;
             z-index: 10;
@@ -254,7 +268,7 @@
         .resize-handle-h {
             grid-column: 1 / 4;
             grid-row: 2;
-            background: var(--border-color);
+            background: #3e3e42;
             cursor: row-resize;
             position: relative;
             z-index: 10;
@@ -262,7 +276,7 @@
 
         .resize-handle-v:hover,
         .resize-handle-h:hover {
-            background: var(--accent-color);
+            background: #007acc;
         }
 
         /* Settings Panel */
@@ -272,12 +286,12 @@
             right: -400px;
             width: 400px;
             height: 100vh;
-            background: var(--bg-secondary);
-            border-left: 1px solid var(--border-color);
-            z-index: 3000;
+            background: #2d2d30;
+            border-left: 1px solid #3e3e42;
+            z-index: 1000;
             transition: right 0.3s ease;
-            display: flex;
-            flex-direction: column;
+            overflow-y: auto;
+            padding: 2rem;
         }
 
         .settings-panel.open {
@@ -285,23 +299,25 @@
         }
 
         .settings-header {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 2rem;
         }
 
         .settings-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            color: var(--accent-color);
+            color: #007acc;
         }
 
-        .settings-content {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
+        .settings-close {
+            background: #f48771;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
         .settings-section {
@@ -309,11 +325,9 @@
         }
 
         .settings-section h3 {
-            color: var(--text-primary);
+            color: #cccccc;
             margin-bottom: 1rem;
-            font-size: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .setting-item {
@@ -322,114 +336,55 @@
 
         .setting-label {
             display: block;
-            color: var(--text-secondary);
             margin-bottom: 0.5rem;
+            color: #cccccc;
             font-size: 0.9rem;
         }
 
         .setting-input {
             width: 100%;
             padding: 0.5rem;
-            border: 1px solid var(--border-color);
+            border: 1px solid #3e3e42;
             border-radius: 4px;
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
+            background: #37373d;
+            color: white;
             font-size: 0.9rem;
         }
 
         .setting-select {
             width: 100%;
             padding: 0.5rem;
-            border: 1px solid var(--border-color);
+            border: 1px solid #3e3e42;
             border-radius: 4px;
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
+            background: #37373d;
+            color: white;
             font-size: 0.9rem;
         }
 
         .setting-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            margin-right: 0.5rem;
         }
 
-        .setting-checkbox input {
-            width: auto;
-        }
-
-        .theme-options {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .theme-option {
-            flex: 1;
-            padding: 1rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .theme-option.active {
-            border-color: var(--accent-color);
-            background: rgba(0, 122, 204, 0.1);
-        }
-
-        .theme-option:hover {
-            border-color: var(--accent-color);
-        }
-
-        .visibility-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .visibility-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.5rem;
-            background: var(--bg-tertiary);
+        .download-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
             border-radius: 4px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            width: 50px;
-            height: 24px;
-            background: #ccc;
-            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.3s;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 1rem;
         }
 
-        .toggle-switch.active {
-            background: var(--accent-color);
-        }
-
-        .toggle-switch::after {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            background: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
-
-        .toggle-switch.active::after {
-            transform: translateX(26px);
+        .download-btn:hover {
+            background: #45a049;
         }
 
         /* Drop Zone Styles */
         .drop-zone {
             height: 100%;
-            border: 2px dashed var(--border-color);
+            border: 2px dashed #3e3e42;
             margin: 1rem;
             border-radius: 8px;
             display: flex;
@@ -442,7 +397,7 @@
         }
 
         .drop-zone.drag-over {
-            border-color: var(--accent-color);
+            border-color: #007acc;
             background: rgba(0, 122, 204, 0.1);
         }
 
@@ -452,17 +407,17 @@
 
         .drop-zone h3 {
             margin-bottom: 1rem;
-            color: var(--text-secondary);
+            color: #cccccc;
         }
 
         .drop-zone p {
-            color: var(--text-muted);
+            color: #969696;
             margin-bottom: 1rem;
             font-size: 0.9rem;
         }
 
         .storage-info {
-            color: var(--accent-color);
+            color: #007acc;
             font-size: 0.8rem;
             margin-top: 0.5rem;
         }
@@ -472,7 +427,7 @@
         }
 
         .browse-btn {
-            background: var(--accent-color);
+            background: #007acc;
             color: white;
             border: none;
             padding: 0.5rem 1rem;
@@ -496,7 +451,7 @@
 
         .file-item {
             padding: 0.5rem;
-            background: var(--bg-quaternary);
+            background: #37373d;
             border-radius: 3px;
             cursor: pointer;
             font-size: 0.8rem;
@@ -511,7 +466,7 @@
         }
 
         .file-item.active {
-            background: var(--accent-color);
+            background: #007acc;
         }
 
         .file-item.sensitive {
@@ -530,12 +485,12 @@
 
         .file-meta {
             font-size: 0.7rem;
-            color: var(--text-muted);
+            color: #969696;
             margin-top: 0.2rem;
         }
 
         .file-delete {
-            color: var(--error-color);
+            color: #f48771;
             cursor: pointer;
             padding: 0.2rem 0.4rem;
             border-radius: 2px;
@@ -543,7 +498,7 @@
         }
 
         .file-delete:hover {
-            background: var(--error-color);
+            background: #f48771;
             color: white;
         }
 
@@ -558,20 +513,34 @@
             height: 100%;
         }
 
+        /* Simple Editor Fallback */
+        .simple-editor {
+            width: 100%;
+            height: 100%;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            outline: none;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 1rem;
+            resize: none;
+        }
+
         /* Enhanced Terminal Styles */
         .terminal-container {
             height: 100%;
-            background: var(--terminal-bg);
-            color: var(--terminal-text);
+            background: #0c0c0c;
+            color: #00ff00;
             font-family: 'Courier New', monospace;
             display: flex;
             flex-direction: column;
         }
 
         .terminal-header {
-            background: var(--bg-quaternary);
+            background: #1a1a1a;
             padding: 0.5rem 1rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid #333;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -579,13 +548,13 @@
 
         .terminal-status {
             font-size: 0.8rem;
-            color: var(--terminal-text);
+            color: #00ff00;
         }
 
         .language-selector {
-            background: var(--bg-tertiary);
-            color: var(--terminal-text);
-            border: 1px solid var(--border-color);
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #555;
             padding: 0.2rem 0.5rem;
             border-radius: 3px;
             font-size: 0.7rem;
@@ -603,12 +572,12 @@
         .terminal-input-container {
             display: flex;
             padding: 0.5rem 1rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid #333;
             align-items: center;
         }
 
         .terminal-prompt {
-            color: var(--terminal-text);
+            color: #00ff00;
             margin-right: 0.5rem;
             font-weight: bold;
         }
@@ -617,7 +586,7 @@
             flex: 1;
             background: transparent;
             border: none;
-            color: var(--terminal-text);
+            color: #00ff00;
             font-family: inherit;
             font-size: 0.8rem;
             outline: none;
@@ -628,7 +597,7 @@
         }
 
         .command-success {
-            color: var(--success-color);
+            color: #00ff00;
         }
 
         .command-error {
@@ -640,7 +609,7 @@
         }
 
         .command-warning {
-            color: var(--warning-color);
+            color: #ffa500;
         }
 
         .command-security {
@@ -667,7 +636,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--success-color);
+            background: #4caf50;
             color: white;
             padding: 1rem 2rem;
             border-radius: 4px;
@@ -685,7 +654,7 @@
         }
 
         .notification.error {
-            background: var(--error-color);
+            background: #f48771;
         }
 
         .notification.security {
@@ -707,12 +676,12 @@
         }
 
         .popup {
-            background: var(--bg-secondary);
+            background: #2d2d30;
             border-radius: 8px;
             padding: 2rem;
             max-width: 500px;
             width: 90%;
-            color: var(--text-primary);
+            color: white;
             position: relative;
         }
 
@@ -726,11 +695,11 @@
         .popup-title {
             font-size: 1.2rem;
             font-weight: bold;
-            color: var(--accent-color);
+            color: #007acc;
         }
 
         .popup-close {
-            background: var(--error-color);
+            background: #f48771;
             color: white;
             border: none;
             padding: 0.3rem 0.8rem;
@@ -744,7 +713,7 @@
 
         .tech-tag {
             display: inline-block;
-            background: var(--accent-color);
+            background: #007acc;
             color: white;
             padding: 0.2rem 0.5rem;
             border-radius: 3px;
@@ -758,18 +727,18 @@
 
         /* Clear Data Confirmation Popup */
         .clear-data-popup {
-            background: var(--bg-secondary);
+            background: #2d2d30;
             border-radius: 8px;
             padding: 2rem;
             max-width: 450px;
             width: 90%;
-            color: var(--text-primary);
+            color: white;
             position: relative;
             text-align: center;
         }
 
         .clear-data-popup h3 {
-            color: var(--danger-color);
+            color: #FF0000;
             margin-bottom: 1rem;
             font-size: 1.3rem;
         }
@@ -777,7 +746,7 @@
         .clear-data-popup p {
             margin-bottom: 2rem;
             line-height: 1.6;
-            color: var(--text-secondary);
+            color: #cccccc;
         }
 
         .clear-data-buttons {
@@ -797,8 +766,8 @@
         }
 
         .clear-data-btn.cancel {
-            background: var(--bg-quaternary);
-            color: var(--text-primary);
+            background: #37373d;
+            color: white;
         }
 
         .clear-data-btn.cancel:hover {
@@ -806,7 +775,7 @@
         }
 
         .clear-data-btn.delete {
-            background: var(--danger-color);
+            background: #FF0000;
             color: white;
         }
 
@@ -816,17 +785,17 @@
 
         /* Footer */
         .footer {
-            background: var(--bg-secondary);
+            background: #2d2d30;
             padding: 1rem 2rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid #3e3e42;
             text-align: center;
-            color: var(--text-muted);
+            color: #969696;
             font-size: 0.8rem;
         }
 
         /* Error Panel */
         .error-panel {
-            background: var(--error-color);
+            background: #f48771;
             color: white;
             padding: 0.5rem 1rem;
             margin: 0.5rem;
@@ -835,12 +804,12 @@
             display: none;
         }
 
-        /* Autosave Indicator */
+        /* Auto-save indicator */
         .autosave-indicator {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--success-color);
+            background: #4caf50;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 4px;
@@ -899,7 +868,7 @@
             width: 20px;
             height: 20px;
             border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--accent-color);
+            border-top: 3px solid #007acc;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -908,24 +877,77 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Eye Icons */
-        .eye-icon {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
     </style>
 </head>
 <body>
+    <!-- Auto-save indicator -->
+    <div id="autoSaveIndicator" class="autosave-indicator">
+        Auto-saved
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification">
         <span id="notificationText">File saved successfully!</span>
     </div>
 
-    <!-- Autosave Indicator -->
-    <div id="autosaveIndicator" class="autosave-indicator">
-        AutoSaved
+    <!-- Settings Panel -->
+    <div id="settingsPanel" class="settings-panel">
+        <div class="settings-header">
+            <div class="settings-title">⚙️ Settings</div>
+            <button id="settingsClose" class="settings-close">Close</button>
+        </div>
+
+        <div class="settings-section">
+            <h3>🎨 Theme</h3>
+            <div class="setting-item">
+                <label class="setting-label">
+                    <input type="radio" name="theme" value="dark" class="setting-checkbox" checked> Dark Mode
+                </label>
+            </div>
+            <div class="setting-item">
+                <label class="setting-label">
+                    <input type="radio" name="theme" value="light" class="setting-checkbox"> Light Mode
+                </label>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>📝 Editor</h3>
+            <div class="setting-item">
+                <label class="setting-label">Font Size (px)</label>
+                <input type="number" id="fontSizeSetting" class="setting-input" min="8" max="32" value="14">
+            </div>
+            <div class="setting-item">
+                <label class="setting-label">Tab Size</label>
+                <select id="tabSizeSetting" class="setting-select">
+                    <option value="2">2 spaces</option>
+                    <option value="4" selected>4 spaces</option>
+                    <option value="8">8 spaces</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>💾 AutoSave</h3>
+            <div class="setting-item">
+                <label class="setting-label">Autosave Interval (seconds)</label>
+                <input type="number" id="autoSaveInterval" class="setting-input" min="1" max="60" value="3">
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>🔔 Notifications</h3>
+            <div class="setting-item">
+                <label class="setting-label">
+                    <input type="checkbox" id="notificationsEnabled" class="setting-checkbox" checked> Enable Notifications
+                </label>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>📦 Export</h3>
+            <button id="downloadZip" class="download-btn">Download Code as ZIP</button>
+        </div>
     </div>
 
     <!-- File Analysis Popup Modal -->
@@ -953,126 +975,16 @@
         </div>
     </div>
 
-    <!-- Settings Panel -->
-    <div id="settingsPanel" class="settings-panel">
-        <div class="settings-header">
-            <div class="settings-title">⚙️ Settings</div>
-            <button id="closeSettings" class="btn">Close</button>
-        </div>
-        <div class="settings-content">
-            <!-- Theme Section -->
-            <div class="settings-section">
-                <h3>🎨 Theme</h3>
-                <div class="theme-options">
-                    <div class="theme-option active" data-theme="dark">
-                        <div>🌙 Dark Mode</div>
-                    </div>
-                    <div class="theme-option" data-theme="light">
-                        <div>☀️ Light Mode</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Editor Section -->
-            <div class="settings-section">
-                <h3>📝 Editor</h3>
-                <div class="setting-item">
-                    <label class="setting-label">Font Size</label>
-                    <select id="fontSizeSetting" class="setting-select">
-                        <option value="10">10px</option>
-                        <option value="12">12px</option>
-                        <option value="14" selected>14px</option>
-                        <option value="16">16px</option>
-                        <option value="18">18px</option>
-                        <option value="20">20px</option>
-                        <option value="24">24px</option>
-                        <option value="28">28px</option>
-                        <option value="32">32px</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <label class="setting-label">Tab Size</label>
-                    <select id="tabSizeSetting" class="setting-select">
-                        <option value="2">2 spaces</option>
-                        <option value="4" selected>4 spaces</option>
-                        <option value="8">8 spaces</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- AutoSave Section -->
-            <div class="settings-section">
-                <h3>💾 AutoSave</h3>
-                <div class="setting-item">
-                    <label class="setting-label">AutoSave Interval (seconds)</label>
-                    <input type="number" id="autosaveInterval" class="setting-input" value="3" min="1" max="60">
-                </div>
-            </div>
-
-            <!-- Notifications Section -->
-            <div class="settings-section">
-                <h3>🔔 Notifications</h3>
-                <div class="setting-item">
-                    <div class="setting-checkbox">
-                        <input type="checkbox" id="notificationsEnabled" checked>
-                        <label for="notificationsEnabled">Enable Notifications</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Export Section -->
-            <div class="settings-section">
-                <h3>📦 Export</h3>
-                <div class="setting-item">
-                    <button id="downloadZip" class="btn" style="width: 100%;">Download Code as ZIP</button>
-                </div>
-            </div>
-
-            <!-- Window Visibility Section -->
-            <div class="settings-section">
-                <h3>👁️ Window Visibility</h3>
-                <div class="visibility-controls">
-                    <div class="visibility-item">
-                        <span>Drag & Drop Files</span>
-                        <div class="toggle-switch active" data-window="1"></div>
-                    </div>
-                    <div class="visibility-item">
-                        <span>Uploaded Files</span>
-                        <div class="toggle-switch active" data-window="2"></div>
-                    </div>
-                    <div class="visibility-item">
-                        <span>Code Editor</span>
-                        <div class="toggle-switch active" data-window="3"></div>
-                    </div>
-                    <div class="visibility-item">
-                        <span>Programming Terminal</span>
-                        <div class="toggle-switch active" data-window="4"></div>
-                    </div>
-                </div>
-                <div class="setting-item" style="margin-top: 1rem;">
-                    <button id="saveVisibilitySettings" class="btn" style="width: 100%;">Save Changes</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Header -->
     <header class="header">
-        <div class="logo">Code Studio Pro</div>
+        <div class="logo">Code Studio Pro IDE </div>
         <div class="header-controls">
             <div class="font-controls">
-                <button id="fontDecrease" class="font-btn" title="Decrease Font Size">
-                    <svg class="eye-icon" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                        <line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="2"/>
-                    </svg>
+                <button id="fontDecrease" class="font-btn">
+                    <span class="eye-icon small">👁</span> A
                 </button>
-                <button id="fontIncrease" class="font-btn" title="Increase Font Size">
-                    <svg class="eye-icon" viewBox="0 0 24 24">
-                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                        <line x1="12" y1="9" x2="12" y2="15" stroke="currentColor" stroke-width="2"/>
-                        <line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="2"/>
-                    </svg>
+                <button id="fontIncrease" class="font-btn">
+                    <span class="eye-icon large">👁</span> A
                 </button>
             </div>
             <button id="clearBtn" class="btn danger">Clear Data</button>
@@ -1088,11 +1000,10 @@
         <!-- Window 1: Drag & Drop -->
         <div class="window window-1" id="window1">
             <div class="window-header">
-                <div class="window-title">
-                    📁 Drag & Drop Files
-                </div>
+                📁 Drag & Drop Files
                 <div class="window-controls">
-                    <button class="window-control-btn" onclick="codeStudio.toggleWindow(1)" title="Hide Window">👁️</button>
+                    <button class="window-btn save" data-window="window1">Save</button>
+                    <button class="window-btn hide" data-window="window1">Hide</button>
                 </div>
             </div>
             <div class="window-content">
@@ -1111,17 +1022,16 @@
         <!-- Window 2: File List -->
         <div class="window window-2" id="window2">
             <div class="window-header">
-                <div class="window-title">
-                    📄 Uploaded Files
-                </div>
+                📄 Uploaded Files
                 <div class="window-controls">
-                    <button class="window-control-btn" onclick="codeStudio.toggleWindow(2)" title="Hide Window">👁️</button>
+                    <button class="window-btn save" data-window="window2">Save</button>
+                    <button class="window-btn hide" data-window="window2">Hide</button>
                 </div>
             </div>
             <div class="window-content">
                 <div class="file-list-container">
                     <div id="fileList" class="file-list">
-                        <div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 2rem;">
+                        <div style="color: #969696; font-style: italic; text-align: center; padding: 2rem;">
                             No files uploaded yet
                         </div>
                     </div>
@@ -1132,11 +1042,10 @@
         <!-- Window 3: Code Editor -->
         <div class="window window-3" id="window3">
             <div class="window-header">
-                <div class="window-title">
-                    ⚡ Code Editor
-                </div>
+                ⚡ Code Editor
                 <div class="window-controls">
-                    <button class="window-control-btn" onclick="codeStudio.toggleWindow(3)" title="Hide Window">👁️</button>
+                    <button class="window-btn save" data-window="window3">Save</button>
+                    <button class="window-btn hide" data-window="window3">Hide</button>
                 </div>
             </div>
             <div class="window-content">
@@ -1151,11 +1060,10 @@
         <!-- Window 4: Enhanced Terminal -->
         <div class="window window-4" id="window4">
             <div class="window-header">
-                <div class="window-title">
-                    💻 Universal Programming Terminal
-                </div>
+                💻 Universal Programming Terminal
                 <div class="window-controls">
-                    <button class="window-control-btn" onclick="codeStudio.toggleWindow(4)" title="Hide Window">👁️</button>
+                    <button class="window-btn save" data-window="window4">Save</button>
+                    <button class="window-btn hide" data-window="window4">Hide</button>
                 </div>
             </div>
             <div class="window-content">
@@ -1185,7 +1093,7 @@
                         </select>
                     </div>
                     <div id="terminalOutput" class="terminal-output">
-                        <div class="command-success">Code Studio Pro Universal Programming Terminal v3.0</div>
+                        <div class="command-success">Code Studio Pro IDE  Universal Programming Terminal v4.0</div>
                         <div class="command-info">🚀 Full Language Support: HTML, CSS, JS, TS, Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL</div>
                         <div class="command-info">🔧 Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Spring, .NET, Rails</div>
                         <div class="command-info">✨ Auto-completion enabled for all languages</div>
@@ -1208,59 +1116,107 @@
 
     <!-- Footer -->
     <footer class="footer">
-        © Copyright 2025 | All rights reserved. | Designed in Armenia by ADG.
+        © Copyright 2025 | All rights reserved. | Designed in Armenia by ADG. | Enhanced Version 4.0
     </footer>
 
-    <!-- Monaco Editor -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
-    <!-- JSZip for ZIP file creation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    
     <script>
-        class CodeStudioPro {
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.warn('Error caught:', e.error);
+        });
+
+        class CodeStudioProEnhanced {
             constructor() {
                 this.files = new Map();
                 this.currentFile = null;
                 this.editor = null;
+                this.editorFallback = null;
                 this.autoSaveTimeout = null;
-                this.storageKey = 'codestudio_files';
-                this.settingsKey = 'codestudio_settings';
+                this.storageKey = 'codestudio_enhanced_files';
+                this.settingsKey = 'codestudio_enhanced_settings';
                 this.fontSize = 14;
                 this.tabSize = 4;
+                this.autoSaveInterval = 3;
+                this.notificationsEnabled = true;
+                this.theme = 'dark';
                 this.terminalHistory = [];
                 this.terminalHistoryIndex = -1;
                 this.currentLanguage = 'bash';
-                this.autosaveInterval = 3000; // 3 seconds default
-                this.notificationsEnabled = true;
-                this.theme = 'dark';
-                this.windowVisibility = {
-                    1: true,
-                    2: true,
-                    3: true,
-                    4: true
+                this.windowStates = {
+                    window1: true,
+                    window2: true,
+                    window3: true,
+                    window4: true
                 };
                 
                 this.init();
             }
 
             init() {
-                this.loadSettings();
-                this.loadFromStorage();
-                this.setupEventListeners();
-                this.setupEditor();
-                this.setupResizers();
-                this.setupTerminal();
-                this.updateFileList();
-                this.applyTheme();
-                this.startAutoSave();
-                
-                // Clear storage when tab closes
-                window.addEventListener('beforeunload', () => {
-                    this.clearStorage();
-                });
+                console.log('Initializing Code Studio Pro IDE ...');
+                try {
+                    this.loadSettings();
+                    this.loadFromStorage();
+                    this.setupEventListeners();
+                    this.setupEditor();
+                    this.setupResizers();
+                    this.setupTerminal();
+                    this.updateFileList();
+                    this.applySettings();
+                    this.startAutoSave();
+                    
+                    // Clear storage when tab closes
+                    window.addEventListener('beforeunload', () => {
+                        this.clearStorage();
+                    });
+
+                    // Auto-save on any user interaction
+                    document.addEventListener('click', () => this.triggerAutoSave());
+                    document.addEventListener('keydown', () => this.triggerAutoSave());
+                    document.addEventListener('change', () => this.triggerAutoSave());
+                    
+                    console.log('Code Studio Pro IDE  initialized successfully!');
+                    this.showNotification('Code Studio Pro IDE  loaded successfully!');
+                } catch (error) {
+                    console.error('Initialization error:', error);
+                    this.showNotification('Initialization completed with warnings', 'error');
+                }
             }
 
-            // Settings Management
+            // Enhanced AutoSave functionality
+            startAutoSave() {
+                setInterval(() => {
+                    this.performAutoSave();
+                }, this.autoSaveInterval * 1000);
+            }
+
+            triggerAutoSave() {
+                clearTimeout(this.autoSaveTimeout);
+                this.autoSaveTimeout = setTimeout(() => {
+                    this.performAutoSave();
+                }, 500);
+            }
+
+            performAutoSave() {
+                if (this.currentFile && (this.editor || this.editorFallback)) {
+                    this.saveCurrentFile();
+                    this.showAutoSaveIndicator();
+                }
+                this.saveSettings();
+                this.saveToStorage();
+            }
+
+            showAutoSaveIndicator() {
+                const indicator = document.getElementById('autoSaveIndicator');
+                if (indicator) {
+                    indicator.classList.add('show');
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                    }, 2000);
+                }
+            }
+
+            // Settings management
             loadSettings() {
                 try {
                     const settings = localStorage.getItem(this.settingsKey);
@@ -1268,10 +1224,15 @@
                         const parsed = JSON.parse(settings);
                         this.fontSize = parsed.fontSize || 14;
                         this.tabSize = parsed.tabSize || 4;
-                        this.autosaveInterval = (parsed.autosaveInterval || 3) * 1000;
+                        this.autoSaveInterval = parsed.autoSaveInterval || 3;
                         this.notificationsEnabled = parsed.notificationsEnabled !== false;
                         this.theme = parsed.theme || 'dark';
-                        this.windowVisibility = parsed.windowVisibility || {1: true, 2: true, 3: true, 4: true};
+                        this.windowStates = parsed.windowStates || {
+                            window1: true,
+                            window2: true,
+                            window3: true,
+                            window4: true
+                        };
                     }
                 } catch (error) {
                     console.warn('Failed to load settings:', error);
@@ -1283,10 +1244,10 @@
                     const settings = {
                         fontSize: this.fontSize,
                         tabSize: this.tabSize,
-                        autosaveInterval: this.autosaveInterval / 1000,
+                        autoSaveInterval: this.autoSaveInterval,
                         notificationsEnabled: this.notificationsEnabled,
                         theme: this.theme,
-                        windowVisibility: this.windowVisibility
+                        windowStates: this.windowStates
                     };
                     localStorage.setItem(this.settingsKey, JSON.stringify(settings));
                 } catch (error) {
@@ -1294,71 +1255,91 @@
                 }
             }
 
-            applyTheme() {
-                document.body.className = this.theme === 'light' ? 'light-theme' : '';
-                
-                // Update theme options in settings
-                document.querySelectorAll('.theme-option').forEach(option => {
-                    option.classList.toggle('active', option.dataset.theme === this.theme);
-                });
+            applySettings() {
+                try {
+                    // Apply theme
+                    document.body.className = this.theme === 'light' ? 'light-mode' : '';
+                    
+                    // Update settings panel
+                    const themeRadio = document.querySelector(`input[name="theme"][value="${this.theme}"]`);
+                    if (themeRadio) themeRadio.checked = true;
+                    
+                    const fontSizeInput = document.getElementById('fontSizeSetting');
+                    if (fontSizeInput) fontSizeInput.value = this.fontSize;
+                    
+                    const tabSizeSelect = document.getElementById('tabSizeSetting');
+                    if (tabSizeSelect) tabSizeSelect.value = this.tabSize;
+                    
+                    const autoSaveInput = document.getElementById('autoSaveInterval');
+                    if (autoSaveInput) autoSaveInput.value = this.autoSaveInterval;
+                    
+                    const notificationsCheckbox = document.getElementById('notificationsEnabled');
+                    if (notificationsCheckbox) notificationsCheckbox.checked = this.notificationsEnabled;
 
-                // Update Monaco editor theme if it exists
-                if (this.editor) {
-                    monaco.editor.setTheme(this.theme === 'light' ? 'vs' : 'vs-dark');
+                    // Apply window states
+                    Object.keys(this.windowStates).forEach(windowId => {
+                        const window = document.getElementById(windowId);
+                        if (window) {
+                            const button = window.querySelector('.window-btn.hide, .window-btn.show');
+                            if (this.windowStates[windowId]) {
+                                window.classList.remove('hidden');
+                                if (button) {
+                                    button.textContent = 'Hide';
+                                    button.classList.remove('show');
+                                    button.classList.add('hide');
+                                }
+                            } else {
+                                window.classList.add('hidden');
+                                if (button) {
+                                    button.textContent = 'Show';
+                                    button.classList.remove('hide');
+                                    button.classList.add('show');
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.warn('Failed to apply settings:', error);
                 }
             }
 
-            toggleWindow(windowNumber) {
-                this.windowVisibility[windowNumber] = !this.windowVisibility[windowNumber];
-                const window = document.getElementById(`window${windowNumber}`);
-                window.classList.toggle('hidden', !this.windowVisibility[windowNumber]);
-                
-                // Update toggle switch in settings
-                const toggle = document.querySelector(`[data-window="${windowNumber}"]`);
-                if (toggle) {
-                    toggle.classList.toggle('active', this.windowVisibility[windowNumber]);
+            // Window management
+            toggleWindow(windowId) {
+                try {
+                    const window = document.getElementById(windowId);
+                    const button = window.querySelector('.window-btn.hide, .window-btn.show');
+                    
+                    if (window.classList.contains('hidden')) {
+                        window.classList.remove('hidden');
+                        button.textContent = 'Hide';
+                        button.classList.remove('show');
+                        button.classList.add('hide');
+                        this.windowStates[windowId] = true;
+                    } else {
+                        window.classList.add('hidden');
+                        button.textContent = 'Show';
+                        button.classList.remove('hide');
+                        button.classList.add('show');
+                        this.windowStates[windowId] = false;
+                    }
+                    
+                    this.saveSettings();
+                    this.showNotification(`Window ${windowId.replace('window', '')} ${this.windowStates[windowId] ? 'shown' : 'hidden'}`);
+                } catch (error) {
+                    console.warn('Failed to toggle window:', error);
                 }
-                
-                this.triggerAutoSave();
             }
 
-            startAutoSave() {
-                // Clear existing interval
-                if (this.autoSaveInterval) {
-                    clearInterval(this.autoSaveTimer);
-                }
-                
-                // Start new interval
-                this.autoSaveTimer = setInterval(() => {
-                    this.performAutoSave();
-                }, this.autosaveInterval);
-            }
-
-            performAutoSave() {
-                if (this.currentFile && this.editor) {
-                    this.saveCurrentFile(true); // true indicates autosave
-                }
-                this.saveToStorage();
+            saveWindowState(windowId) {
                 this.saveSettings();
-                this.showAutoSaveIndicator();
+                this.saveToStorage();
+                if (this.currentFile && (this.editor || this.editorFallback)) {
+                    this.saveCurrentFile();
+                }
+                this.showNotification(`Window ${windowId.replace('window', '')} state saved`);
             }
 
-            triggerAutoSave() {
-                // Reset the autosave timer when user performs an action
-                clearTimeout(this.autoSaveTimeout);
-                this.autoSaveTimeout = setTimeout(() => {
-                    this.performAutoSave();
-                }, 1000); // Quick autosave after 1 second of inactivity
-            }
-
-            showAutoSaveIndicator() {
-                const indicator = document.getElementById('autosaveIndicator');
-                indicator.classList.add('show');
-                setTimeout(() => {
-                    indicator.classList.remove('show');
-                }, 2000);
-            }
-
+            // ZIP download functionality
             async downloadAsZip() {
                 if (this.files.size === 0) {
                     this.showNotification('No files to download', 'error');
@@ -1366,90 +1347,40 @@
                 }
 
                 try {
-                    const zip = new JSZip();
-                    
-                    // Add all files to zip
+                    // Simple ZIP creation without external library
+                    let zipContent = '';
                     this.files.forEach((fileData, filename) => {
-                        // Use original content (not masked) for download
-                        zip.file(filename, fileData.content);
+                        zipContent += `=== ${filename} ===\n${fileData.content}\n\n`;
                     });
 
-                    // Generate zip file
-                    const content = await zip.generateAsync({type: 'blob'});
-                    
-                    // Create download link
-                    const url = URL.createObjectURL(content);
+                    const blob = new Blob([zipContent], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = `codestudio-project-${new Date().toISOString().split('T')[0]}.zip`;
+                    a.download = `codestudio-project-${new Date().toISOString().split('T')[0]}.txt`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    
-                    this.showNotification('Project downloaded as ZIP file');
+
+                    this.showNotification('Project downloaded successfully');
                 } catch (error) {
-                    this.showNotification('Failed to create ZIP file', 'error');
-                    console.error('ZIP creation error:', error);
+                    this.showNotification('Failed to download project', 'error');
+                    console.error('Download error:', error);
                 }
             }
 
-            // Security: Detect sensitive data patterns
+            // Security functions
             detectSensitiveData(content) {
                 const sensitivePatterns = [
-                    // Password patterns
                     /password\s*[=:]\s*["']([^"']+)["']/gi,
-                    /pwd\s*[=:]\s*["']([^"']+)["']/gi,
-                    /pass\s*[=:]\s*["']([^"']+)["']/gi,
-                    
-                    // API Key patterns
                     /api[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
-                    /apikey\s*[=:]\s*["']([^"']+)["']/gi,
-                    /api[_-]?secret\s*[=:]\s*["']([^"']+)["']/gi,
-                    
-                    // Access Key patterns
-                    /access[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
-                    /secret[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
-                    /private[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
-                    
-                    // Token patterns
-                    /token\s*[=:]\s*["']([^"']+)["']/gi,
-                    /auth[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
-                    /bearer[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
-                    /jwt[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
-                    
-                    // Database credentials
-                    /db[_-]?password\s*[=:]\s*["']([^"']+)["']/gi,
-                    /database[_-]?password\s*[=:]\s*["']([^"']+)["']/gi,
-                    /connection[_-]?string\s*[=:]\s*["']([^"']+)["']/gi,
-                    
-                    // Environment variables
-                    /process\.env\.([A-Z_]*(?:PASSWORD|KEY|SECRET|TOKEN)[A-Z_]*)/gi,
-                    /\$\{([A-Z_]*(?:PASSWORD|KEY|SECRET|TOKEN)[A-Z_]*)\}/gi,
-                    
-                    // AWS credentials
-                    /aws[_-]?access[_-]?key[_-]?id\s*[=:]\s*["']([^"']+)["']/gi,
-                    /aws[_-]?secret[_-]?access[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
-                    
-                    // OAuth patterns
-                    /client[_-]?secret\s*[=:]\s*["']([^"']+)["']/gi,
-                    /oauth[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
-                    
-                    // Generic secret patterns
                     /secret\s*[=:]\s*["']([^"']+)["']/gi,
-                    /key\s*[=:]\s*["']([A-Za-z0-9+/]{20,})["']/gi,
-                    
-                    // JWT tokens (base64 pattern)
-                    /eyJ[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+/g,
-                    
-                    // Common hash patterns (MD5, SHA)
-                    /[a-f0-9]{32}/g, // MD5
-                    /[a-f0-9]{40}/g, // SHA1
-                    /[a-f0-9]{64}/g, // SHA256
+                    /token\s*[=:]\s*["']([^"']+)["']/gi,
                 ];
 
                 const findings = [];
-                sensitivePatterns.forEach((pattern, index) => {
+                sensitivePatterns.forEach((pattern) => {
                     const matches = content.match(pattern);
                     if (matches) {
                         findings.push(...matches);
@@ -1459,54 +1390,12 @@
                 return findings;
             }
 
-            // Security: Mask sensitive data with asterisks
             maskSensitiveData(content) {
                 const sensitivePatterns = [
-                    // Password patterns
                     { pattern: /(password\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(pwd\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(pass\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    
-                    // API Key patterns
                     { pattern: /(api[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(apikey\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(api[_-]?secret\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    
-                    // Access Key patterns
-                    { pattern: /(access[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(secret[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(private[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    
-                    // Token patterns
-                    { pattern: /(token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(auth[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(bearer[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(jwt[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    
-                    // Database credentials
-                    { pattern: /(db[_-]?password\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(database[_-]?password\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(connection[_-]?string\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    
-                    // AWS credentials
-                    { pattern: /(aws[_-]?access[_-]?key[_-]?id\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(aws[_-]?secret[_-]?access[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    
-                    // OAuth patterns
-                    { pattern: /(client[_-]?secret\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(oauth[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    
-                    // Generic secret patterns
                     { pattern: /(secret\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
-                    { pattern: /(key\s*[=:]\s*["'])([A-Za-z0-9+/]{20,})(["'])/gi, replacement: '$1********$3' },
-                    
-                    // JWT tokens
-                    { pattern: /eyJ[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+/g, replacement: 'eyJ********' },
-                    
-                    // Hash patterns
-                    { pattern: /[a-f0-9]{32}/g, replacement: '********' },
-                    { pattern: /[a-f0-9]{40}/g, replacement: '********' },
-                    { pattern: /[a-f0-9]{64}/g, replacement: '********' },
+                    { pattern: /(token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
                 ];
 
                 let maskedContent = content;
@@ -1518,591 +1407,347 @@
             }
 
             setupEventListeners() {
-                const dropZone = document.getElementById('dropZone');
-                const fileInput = document.getElementById('fileInput');
-                const browseBtn = document.getElementById('browseBtn');
-                const runBtn = document.getElementById('runBtn');
-                const clearBtn = document.getElementById('clearBtn');
-                const fontIncrease = document.getElementById('fontIncrease');
-                const fontDecrease = document.getElementById('fontDecrease');
-                const popupClose = document.getElementById('popupClose');
-                const languageSelector = document.getElementById('languageSelector');
-                const settingsBtn = document.getElementById('settingsBtn');
-                const closeSettings = document.getElementById('closeSettings');
+                console.log('Setting up event listeners...');
                 
-                // Clear Data Confirmation popup elements
-                const cancelClearData = document.getElementById('cancelClearData');
-                const confirmClearData = document.getElementById('confirmClearData');
-                const clearDataOverlay = document.getElementById('clearDataOverlay');
+                try {
+                    // Get all elements with null checks
+                    const dropZone = document.getElementById('dropZone');
+                    const fileInput = document.getElementById('fileInput');
+                    const browseBtn = document.getElementById('browseBtn');
+                    const runBtn = document.getElementById('runBtn');
+                    const clearBtn = document.getElementById('clearBtn');
+                    const fontIncrease = document.getElementById('fontIncrease');
+                    const fontDecrease = document.getElementById('fontDecrease');
+                    const popupClose = document.getElementById('popupClose');
+                    const languageSelector = document.getElementById('languageSelector');
+                    const settingsBtn = document.getElementById('settingsBtn');
+                    const settingsClose = document.getElementById('settingsClose');
+                    const downloadZip = document.getElementById('downloadZip');
+                    const cancelClearData = document.getElementById('cancelClearData');
+                    const confirmClearData = document.getElementById('confirmClearData');
+                    const clearDataOverlay = document.getElementById('clearDataOverlay');
 
-                // Settings elements
-                const themeOptions = document.querySelectorAll('.theme-option');
-                const fontSizeSetting = document.getElementById('fontSizeSetting');
-                const tabSizeSetting = document.getElementById('tabSizeSetting');
-                const autosaveInterval = document.getElementById('autosaveInterval');
-                const notificationsEnabled = document.getElementById('notificationsEnabled');
-                const downloadZip = document.getElementById('downloadZip');
-                const saveVisibilitySettings = document.getElementById('saveVisibilitySettings');
-                const toggleSwitches = document.querySelectorAll('.toggle-switch');
-
-                // Drag and drop
-                dropZone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    dropZone.classList.add('drag-over');
-                });
-
-                dropZone.addEventListener('dragleave', () => {
-                    dropZone.classList.remove('drag-over');
-                });
-
-                dropZone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    dropZone.classList.remove('drag-over');
-                    this.handleFiles(e.dataTransfer.files);
-                });
-
-                // File input
-                browseBtn.addEventListener('click', () => {
-                    fileInput.click();
-                });
-
-                fileInput.addEventListener('change', (e) => {
-                    this.handleFiles(e.target.files);
-                });
-
-                // Buttons
-                runBtn.addEventListener('click', () => {
-                    this.runCurrentFile();
-                });
-
-                // Clear Data button - show confirmation popup
-                clearBtn.addEventListener('click', () => {
-                    this.showClearDataConfirmation();
-                });
-
-                // Clear Data confirmation popup handlers
-                cancelClearData.addEventListener('click', () => {
-                    this.hideClearDataConfirmation();
-                });
-
-                confirmClearData.addEventListener('click', () => {
-                    this.hideClearDataConfirmation();
-                    this.clearAllData();
-                });
-
-                // Close popup when clicking overlay
-                clearDataOverlay.addEventListener('click', (e) => {
-                    if (e.target.id === 'clearDataOverlay') {
-                        this.hideClearDataConfirmation();
+                    // Settings panel
+                    if (settingsBtn) {
+                        settingsBtn.addEventListener('click', () => {
+                            console.log('Settings button clicked');
+                            const panel = document.getElementById('settingsPanel');
+                            if (panel) panel.classList.add('open');
+                        });
                     }
-                });
 
-                // Font controls
-                fontIncrease.addEventListener('click', () => {
-                    this.changeFontSize(2);
-                });
+                    if (settingsClose) {
+                        settingsClose.addEventListener('click', () => {
+                            console.log('Settings close button clicked');
+                            const panel = document.getElementById('settingsPanel');
+                            if (panel) panel.classList.remove('open');
+                        });
+                    }
 
-                fontDecrease.addEventListener('click', () => {
-                    this.changeFontSize(-2);
-                });
-
-                // Language selector
-                languageSelector.addEventListener('change', (e) => {
-                    this.changeLanguage(e.target.value);
-                });
-
-                // Settings
-                settingsBtn.addEventListener('click', () => {
-                    this.openSettings();
-                });
-
-                closeSettings.addEventListener('click', () => {
-                    this.closeSettings();
-                });
-
-                // Theme selection
-                themeOptions.forEach(option => {
-                    option.addEventListener('click', () => {
-                        this.theme = option.dataset.theme;
-                        this.applyTheme();
-                        this.saveSettings();
-                        this.triggerAutoSave();
+                    // Settings controls
+                    document.querySelectorAll('input[name="theme"]').forEach(radio => {
+                        radio.addEventListener('change', (e) => {
+                            console.log('Theme changed to:', e.target.value);
+                            this.theme = e.target.value;
+                            this.applySettings();
+                            this.saveSettings();
+                            this.showNotification(`Theme changed to ${this.theme} mode`);
+                        });
                     });
-                });
 
-                // Settings inputs
-                fontSizeSetting.addEventListener('change', (e) => {
-                    this.fontSize = parseInt(e.target.value);
-                    if (this.editor) {
-                        this.editor.updateOptions({ fontSize: this.fontSize });
+                    const fontSizeInput = document.getElementById('fontSizeSetting');
+                    if (fontSizeInput) {
+                        fontSizeInput.addEventListener('change', (e) => {
+                            this.fontSize = parseInt(e.target.value);
+                            if (this.editor) {
+                                this.editor.updateOptions({ fontSize: this.fontSize });
+                            } else if (this.editorFallback) {
+                                this.editorFallback.style.fontSize = this.fontSize + 'px';
+                            }
+                            this.saveSettings();
+                            this.showNotification(`Font size changed to ${this.fontSize}px`);
+                        });
                     }
-                    this.saveSettings();
-                    this.triggerAutoSave();
-                });
 
-                tabSizeSetting.addEventListener('change', (e) => {
-                    this.tabSize = parseInt(e.target.value);
-                    if (this.editor) {
-                        this.editor.updateOptions({ tabSize: this.tabSize });
+                    const tabSizeSelect = document.getElementById('tabSizeSetting');
+                    if (tabSizeSelect) {
+                        tabSizeSelect.addEventListener('change', (e) => {
+                            this.tabSize = parseInt(e.target.value);
+                            if (this.editor) {
+                                this.editor.updateOptions({ tabSize: this.tabSize });
+                            }
+                            this.saveSettings();
+                            this.showNotification(`Tab size changed to ${this.tabSize} spaces`);
+                        });
                     }
-                    this.saveSettings();
-                    this.triggerAutoSave();
-                });
 
-                autosaveInterval.addEventListener('change', (e) => {
-                    this.autosaveInterval = parseInt(e.target.value) * 1000;
-                    this.startAutoSave();
-                    this.saveSettings();
-                });
+                    const autoSaveIntervalInput = document.getElementById('autoSaveInterval');
+                    if (autoSaveIntervalInput) {
+                        autoSaveIntervalInput.addEventListener('change', (e) => {
+                            this.autoSaveInterval = parseInt(e.target.value);
+                            this.saveSettings();
+                            this.showNotification(`AutoSave interval changed to ${this.autoSaveInterval}s`);
+                        });
+                    }
 
-                notificationsEnabled.addEventListener('change', (e) => {
-                    this.notificationsEnabled = e.target.checked;
-                    this.saveSettings();
-                    this.triggerAutoSave();
-                });
+                    const notificationsCheckbox = document.getElementById('notificationsEnabled');
+                    if (notificationsCheckbox) {
+                        notificationsCheckbox.addEventListener('change', (e) => {
+                            this.notificationsEnabled = e.target.checked;
+                            this.saveSettings();
+                            this.showNotification(`Notifications ${this.notificationsEnabled ? 'enabled' : 'disabled'}`);
+                        });
+                    }
 
-                downloadZip.addEventListener('click', () => {
-                    this.downloadAsZip();
-                });
+                    if (downloadZip) {
+                        downloadZip.addEventListener('click', () => {
+                            console.log('Download ZIP button clicked');
+                            this.downloadAsZip();
+                        });
+                    }
 
-                saveVisibilitySettings.addEventListener('click', () => {
-                    this.saveSettings();
-                    this.showNotification('Visibility settings saved');
-                });
-
-                // Toggle switches
-                toggleSwitches.forEach(toggle => {
-                    toggle.addEventListener('click', () => {
-                        const windowNumber = parseInt(toggle.dataset.window);
-                        this.windowVisibility[windowNumber] = !this.windowVisibility[windowNumber];
-                        toggle.classList.toggle('active', this.windowVisibility[windowNumber]);
-                        
-                        const window = document.getElementById(`window${windowNumber}`);
-                        window.classList.toggle('hidden', !this.windowVisibility[windowNumber]);
-                        
-                        this.triggerAutoSave();
+                    // Window controls
+                    document.querySelectorAll('.window-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const windowId = e.target.getAttribute('data-window');
+                            if (e.target.classList.contains('save')) {
+                                this.saveWindowState(windowId);
+                            } else if (e.target.classList.contains('hide') || e.target.classList.contains('show')) {
+                                this.toggleWindow(windowId);
+                            }
+                        });
                     });
-                });
 
-                // Popup
-                popupClose.addEventListener('click', () => {
-                    this.hidePopup();
-                });
+                    // Drag and drop
+                    if (dropZone) {
+                        dropZone.addEventListener('dragover', (e) => {
+                            e.preventDefault();
+                            dropZone.classList.add('drag-over');
+                        });
 
-                document.getElementById('popupOverlay').addEventListener('click', (e) => {
-                    if (e.target.id === 'popupOverlay') {
-                        this.hidePopup();
+                        dropZone.addEventListener('dragleave', () => {
+                            dropZone.classList.remove('drag-over');
+                        });
+
+                        dropZone.addEventListener('drop', (e) => {
+                            e.preventDefault();
+                            dropZone.classList.remove('drag-over');
+                            console.log('Files dropped:', e.dataTransfer.files.length);
+                            this.handleFiles(e.dataTransfer.files);
+                        });
                     }
-                });
 
-                // Update settings UI with current values
-                this.updateSettingsUI();
-            }
+                    // File input
+                    if (browseBtn && fileInput) {
+                        browseBtn.addEventListener('click', () => {
+                            console.log('Browse button clicked');
+                            fileInput.click();
+                        });
 
-            updateSettingsUI() {
-                // Update font size setting
-                document.getElementById('fontSizeSetting').value = this.fontSize;
-                
-                // Update tab size setting
-                document.getElementById('tabSizeSetting').value = this.tabSize;
-                
-                // Update autosave interval
-                document.getElementById('autosaveInterval').value = this.autosaveInterval / 1000;
-                
-                // Update notifications checkbox
-                document.getElementById('notificationsEnabled').checked = this.notificationsEnabled;
-                
-                // Update window visibility toggles
-                Object.keys(this.windowVisibility).forEach(windowNumber => {
-                    const toggle = document.querySelector(`[data-window="${windowNumber}"]`);
-                    if (toggle) {
-                        toggle.classList.toggle('active', this.windowVisibility[windowNumber]);
+                        fileInput.addEventListener('change', (e) => {
+                            console.log('Files selected:', e.target.files.length);
+                            this.handleFiles(e.target.files);
+                        });
                     }
-                    
-                    const window = document.getElementById(`window${windowNumber}`);
-                    if (window) {
-                        window.classList.toggle('hidden', !this.windowVisibility[windowNumber]);
+
+                    // Buttons
+                    if (runBtn) {
+                        runBtn.addEventListener('click', () => {
+                            console.log('Run button clicked');
+                            this.runCurrentFile();
+                        });
                     }
-                });
-            }
 
-            openSettings() {
-                document.getElementById('settingsPanel').classList.add('open');
-                this.updateSettingsUI();
-            }
+                    if (clearBtn) {
+                        clearBtn.addEventListener('click', () => {
+                            console.log('Clear button clicked');
+                            this.showClearDataConfirmation();
+                        });
+                    }
 
-            closeSettings() {
-                document.getElementById('settingsPanel').classList.remove('open');
+                    // Clear Data confirmation popup handlers
+                    if (cancelClearData) {
+                        cancelClearData.addEventListener('click', () => {
+                            this.hideClearDataConfirmation();
+                        });
+                    }
+
+                    if (confirmClearData) {
+                        confirmClearData.addEventListener('click', () => {
+                            this.hideClearDataConfirmation();
+                            this.clearAllData();
+                        });
+                    }
+
+                    // Close popup when clicking overlay
+                    if (clearDataOverlay) {
+                        clearDataOverlay.addEventListener('click', (e) => {
+                            if (e.target.id === 'clearDataOverlay') {
+                                this.hideClearDataConfirmation();
+                            }
+                        });
+                    }
+
+                    // Font controls with eye icons
+                    if (fontIncrease) {
+                        fontIncrease.addEventListener('click', () => {
+                            console.log('Font increase clicked');
+                            this.changeFontSize(2);
+                        });
+                    }
+
+                    if (fontDecrease) {
+                        fontDecrease.addEventListener('click', () => {
+                            console.log('Font decrease clicked');
+                            this.changeFontSize(-2);
+                        });
+                    }
+
+                    // Language selector
+                    if (languageSelector) {
+                        languageSelector.addEventListener('change', (e) => {
+                            console.log('Language changed to:', e.target.value);
+                            this.changeLanguage(e.target.value);
+                        });
+                    }
+
+                    // Popup
+                    if (popupClose) {
+                        popupClose.addEventListener('click', () => {
+                            this.hidePopup();
+                        });
+                    }
+
+                    const popupOverlay = document.getElementById('popupOverlay');
+                    if (popupOverlay) {
+                        popupOverlay.addEventListener('click', (e) => {
+                            if (e.target.id === 'popupOverlay') {
+                                this.hidePopup();
+                            }
+                        });
+                    }
+
+                    console.log('Event listeners set up successfully');
+                } catch (error) {
+                    console.error('Error setting up event listeners:', error);
+                }
             }
 
             showClearDataConfirmation() {
-                document.getElementById('clearDataOverlay').style.display = 'flex';
+                const overlay = document.getElementById('clearDataOverlay');
+                if (overlay) overlay.style.display = 'flex';
             }
 
             hideClearDataConfirmation() {
-                document.getElementById('clearDataOverlay').style.display = 'none';
+                const overlay = document.getElementById('clearDataOverlay');
+                if (overlay) overlay.style.display = 'none';
             }
 
             setupEditor() {
-                require.config({ 
-                    paths: { 
-                        'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' 
-                    } 
-                });
+                console.log('Setting up editor...');
+                
+                try {
+                    // Try to load Monaco Editor
+                    if (typeof require !== 'undefined') {
+                        require.config({ 
+                            paths: { 
+                                'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' 
+                            } 
+                        });
 
-                require(['vs/editor/editor.main'], () => {
-                    this.editor = monaco.editor.create(document.getElementById('editor'), {
-                        value: `// Welcome to Code Studio Pro Universal IDE
-// 🚀 Full Language Support: HTML, CSS, JS, TS, Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL
-// 🔧 Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Spring, .NET, Rails
-// ✨ Auto-completion enabled for all languages
-// 🔒 Security: Sensitive data automatically masked
-// Upload files to get started!`,
-                        language: 'javascript',
-                        theme: this.theme === 'light' ? 'vs' : 'vs-dark',
-                        automaticLayout: true,
-                        fontSize: this.fontSize,
-                        tabSize: this.tabSize,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        wordWrap: 'on',
-                        suggestOnTriggerCharacters: true,
-                        quickSuggestions: true,
-                        autoClosingBrackets: 'always',
-                        autoClosingQuotes: 'always',
-                        autoClosingOvertype: 'always',
-                        autoIndent: 'full',
-                        formatOnPaste: true,
-                        formatOnType: true,
-                        acceptSuggestionOnEnter: 'on',
-                        tabCompletion: 'on'
-                    });
+                        require(['vs/editor/editor.main'], () => {
+                            console.log('Monaco Editor loaded successfully');
+                            
+                            this.editor = monaco.editor.create(document.getElementById('editor'), {
+                                value: this.getWelcomeMessage(),
+                                language: 'javascript',
+                                theme: this.theme === 'light' ? 'vs' : 'vs-dark',
+                                automaticLayout: true,
+                                fontSize: this.fontSize,
+                                tabSize: this.tabSize,
+                                minimap: { enabled: false },
+                                scrollBeyondLastLine: false,
+                                wordWrap: 'on'
+                            });
 
-                    // Enhanced auto-completion for all languages
-                    this.setupUniversalAutoCompletion();
+                            // Auto-save on content change
+                            this.editor.onDidChangeModelContent(() => {
+                                if (this.currentFile) {
+                                    this.triggerAutoSave();
+                                }
+                            });
 
+                            console.log('Monaco Editor setup complete');
+                        }, (error) => {
+                            console.warn('Failed to load Monaco Editor, using fallback:', error);
+                            this.setupFallbackEditor();
+                        });
+                    } else {
+                        console.warn('Monaco Editor loader not available, using fallback');
+                        this.setupFallbackEditor();
+                    }
+                } catch (error) {
+                    console.warn('Error setting up Monaco Editor, using fallback:', error);
+                    this.setupFallbackEditor();
+                }
+            }
+
+            setupFallbackEditor() {
+                console.log('Setting up fallback editor...');
+                const editorContainer = document.getElementById('editor');
+                if (editorContainer) {
+                    this.editorFallback = document.createElement('textarea');
+                    this.editorFallback.className = 'simple-editor';
+                    this.editorFallback.value = this.getWelcomeMessage();
+                    this.editorFallback.style.fontSize = this.fontSize + 'px';
+                    
                     // Auto-save on content change
-                    this.editor.onDidChangeModelContent(() => {
+                    this.editorFallback.addEventListener('input', () => {
                         if (this.currentFile) {
                             this.triggerAutoSave();
                         }
                     });
-
-                    // Error detection
-                    this.editor.onDidChangeModelContent(() => {
-                        this.checkForErrors();
-                    });
-                });
+                    
+                    editorContainer.innerHTML = '';
+                    editorContainer.appendChild(this.editorFallback);
+                    console.log('Fallback editor setup complete');
+                }
             }
 
-            setupUniversalAutoCompletion() {
-                // HTML auto-completion
-                monaco.languages.registerCompletionItemProvider('html', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'html5-template',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>\${1:Document}</title>
-</head>
-<body>
-    \$0
-</body>
-</html>`,
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'HTML5 document template'
-                            },
-                            {
-                                label: 'div',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: '<div>\n\t$0\n</div>',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Division element'
-                            },
-                            {
-                                label: 'form',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: '<form action="${1:#}" method="${2:post}">\n\t$0\n</form>',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Form element'
-                            },
-                            {
-                                label: 'input',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: '<input type="${1:text}" name="${2:name}" id="${3:id}" />',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Input element'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // CSS auto-completion
-                monaco.languages.registerCompletionItemProvider('css', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'flexbox-center',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: `display: flex;
-justify-content: center;
-align-items: center;`,
-                                documentation: 'Flexbox centering'
-                            },
-                            {
-                                label: 'grid-template',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: `display: grid;
-grid-template-columns: \${1:1fr 1fr};
-grid-gap: \${2:1rem};`,
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'CSS Grid template'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // JavaScript/TypeScript auto-completion
-                monaco.languages.registerCompletionItemProvider('javascript', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'function',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'function ${1:name}(${2:params}) {\n\t$0\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Function declaration'
-                            },
-                            {
-                                label: 'arrow-function',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'const ${1:name} = (${2:params}) => {\n\t$0\n};',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Arrow function'
-                            },
-                            {
-                                label: 'react-component',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: `function \${1:ComponentName}() {
-    return (
-        <div>
-            \$0
-        </div>
-    );
-}`,
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'React functional component'
-                            },
-                            {
-                                label: 'react-hook-state',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'const [${1:state}, set${1/(.*)/${1:/capitalize}/}] = useState(${2:initialValue});',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'React useState hook'
-                            },
-                            {
-                                label: 'async-function',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'async function ${1:name}(${2:params}) {\n\ttry {\n\t\t$0\n\t} catch (error) {\n\t\tconsole.error(error);\n\t}\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Async function with try-catch'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // TypeScript auto-completion
-                monaco.languages.registerCompletionItemProvider('typescript', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'interface',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'interface ${1:InterfaceName} {\n\t${2:property}: ${3:type};\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'TypeScript interface'
-                            },
-                            {
-                                label: 'type',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'type ${1:TypeName} = ${2:type};',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'TypeScript type alias'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // Python auto-completion
-                monaco.languages.registerCompletionItemProvider('python', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'def',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'def ${1:function_name}(${2:params}):\n    """${3:Description}"""\n    $0',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Python function definition'
-                            },
-                            {
-                                label: 'class',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'class ${1:ClassName}:\n    """${2:Description}"""\n    \n    def __init__(self${3:, params}):\n        $0',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Python class definition'
-                            },
-                            {
-                                label: 'if-main',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'if __name__ == "__main__":\n    $0',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Python main guard'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // Java auto-completion
-                monaco.languages.registerCompletionItemProvider('java', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'main-method',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'public static void main(String[] args) {\n    $0\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Java main method'
-                            },
-                            {
-                                label: 'class',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'public class ${1:ClassName} {\n    $0\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'Java class definition'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // C++ auto-completion
-                monaco.languages.registerCompletionItemProvider('cpp', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'main-function',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'int main() {\n    $0\n    return 0;\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'C++ main function'
-                            },
-                            {
-                                label: 'include-iostream',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: '#include <iostream>\nusing namespace std;',
-                                documentation: 'Include iostream header'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // C# auto-completion
-                monaco.languages.registerCompletionItemProvider('csharp', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'main-method',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'static void Main(string[] args)\n{\n    $0\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'C# Main method'
-                            },
-                            {
-                                label: 'class',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'public class ${1:ClassName}\n{\n    $0\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'C# class definition'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // PHP auto-completion
-                monaco.languages.registerCompletionItemProvider('php', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'php-tag',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: '<?php\n$0\n?>',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'PHP opening and closing tags'
-                            },
-                            {
-                                label: 'function',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'function ${1:functionName}(${2:$params}) {\n    $0\n}',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'PHP function definition'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
-
-                // SQL auto-completion
-                monaco.languages.registerCompletionItemProvider('sql', {
-                    provideCompletionItems: (model, position) => {
-                        const suggestions = [
-                            {
-                                label: 'select',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'SELECT ${1:columns}\nFROM ${2:table}\nWHERE ${3:condition};',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'SQL SELECT statement'
-                            },
-                            {
-                                label: 'create-table',
-                                kind: monaco.languages.CompletionItemKind.Snippet,
-                                insertText: 'CREATE TABLE ${1:table_name} (\n    ${2:column_name} ${3:data_type},\n    $0\n);',
-                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
-                                documentation: 'SQL CREATE TABLE statement'
-                            }
-                        ];
-                        return { suggestions };
-                    }
-                });
+            getWelcomeMessage() {
+                return `// Welcome to Code Studio Pro IDE  Universal IDE v4.0
+// 🚀 Full Language Support: HTML, CSS, JS, TS, Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL
+// 🔧 Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Spring, .NET, Rails
+// ✨ Auto-completion enabled for all languages
+// 🔒 Security: Sensitive data automatically masked
+// ⚙️ Enhanced Settings: Theme, Font, AutoSave, Notifications
+// 📦 ZIP Export: Download your complete project
+// 👁️ Window Management: Show/Hide panels as needed
+// Upload files to get started!`;
             }
 
             setupResizers() {
-                const resizeHandleV = document.getElementById('resizeHandleV');
-                const resizeHandleH = document.getElementById('resizeHandleH');
-                const mainContent = document.querySelector('.main-content');
+                try {
+                    const resizeHandleV = document.getElementById('resizeHandleV');
+                    const resizeHandleH = document.getElementById('resizeHandleH');
+                    const mainContent = document.querySelector('.main-content');
 
-                // Vertical resizer with constraints
-                this.setupResizer(resizeHandleV, 'vertical', (percentage) => {
-                    const constrainedPercentage = Math.max(25, Math.min(75, percentage));
-                    mainContent.style.gridTemplateColumns = `${constrainedPercentage}% 4px ${100 - constrainedPercentage}%`;
-                });
+                    if (resizeHandleV && mainContent) {
+                        this.setupResizer(resizeHandleV, 'vertical', (percentage) => {
+                            const constrainedPercentage = Math.max(25, Math.min(75, percentage));
+                            mainContent.style.gridTemplateColumns = `${constrainedPercentage}% 4px ${100 - constrainedPercentage}%`;
+                        });
+                    }
 
-                // Horizontal resizer with constraints
-                this.setupResizer(resizeHandleH, 'horizontal', (percentage) => {
-                    const constrainedPercentage = Math.max(30, Math.min(70, percentage));
-                    mainContent.style.gridTemplateRows = `${constrainedPercentage}% 4px ${100 - constrainedPercentage}%`;
-                });
+                    if (resizeHandleH && mainContent) {
+                        this.setupResizer(resizeHandleH, 'horizontal', (percentage) => {
+                            const constrainedPercentage = Math.max(30, Math.min(70, percentage));
+                            mainContent.style.gridTemplateRows = `${constrainedPercentage}% 4px ${100 - constrainedPercentage}%`;
+                        });
+                    }
+                } catch (error) {
+                    console.warn('Error setting up resizers:', error);
+                }
             }
 
             setupResizer(handle, direction, callback) {
@@ -2115,7 +1760,7 @@ grid-gap: \${2:1rem};`,
                     e.preventDefault();
                 });
 
-                function handleMouseMove(e) {
+                const handleMouseMove = (e) => {
                     if (!isResizing) return;
 
                     const mainContent = document.querySelector('.main-content');
@@ -2129,44 +1774,50 @@ grid-gap: \${2:1rem};`,
                     }
 
                     callback(percentage);
-                }
+                };
 
-                function handleMouseUp() {
+                const handleMouseUp = () => {
                     isResizing = false;
                     document.removeEventListener('mousemove', handleMouseMove);
                     document.removeEventListener('mouseup', handleMouseUp);
-                }
+                };
             }
 
             setupTerminal() {
-                const terminalInput = document.getElementById('terminalInput');
+                try {
+                    const terminalInput = document.getElementById('terminalInput');
 
-                terminalInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        const command = terminalInput.value.trim();
-                        if (command) {
-                            this.executeTerminalCommand(command);
-                            this.terminalHistory.push(command);
-                            this.terminalHistoryIndex = this.terminalHistory.length;
-                        }
-                        terminalInput.value = '';
-                    } else if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        if (this.terminalHistoryIndex > 0) {
-                            this.terminalHistoryIndex--;
-                            terminalInput.value = this.terminalHistory[this.terminalHistoryIndex];
-                        }
-                    } else if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        if (this.terminalHistoryIndex < this.terminalHistory.length - 1) {
-                            this.terminalHistoryIndex++;
-                            terminalInput.value = this.terminalHistory[this.terminalHistoryIndex];
-                        } else {
-                            this.terminalHistoryIndex = this.terminalHistory.length;
-                            terminalInput.value = '';
-                        }
+                    if (terminalInput) {
+                        terminalInput.addEventListener('keydown', (e) => {
+                            if (e.key === 'Enter') {
+                                const command = terminalInput.value.trim();
+                                if (command) {
+                                    this.executeTerminalCommand(command);
+                                    this.terminalHistory.push(command);
+                                    this.terminalHistoryIndex = this.terminalHistory.length;
+                                }
+                                terminalInput.value = '';
+                            } else if (e.key === 'ArrowUp') {
+                                e.preventDefault();
+                                if (this.terminalHistoryIndex > 0) {
+                                    this.terminalHistoryIndex--;
+                                    terminalInput.value = this.terminalHistory[this.terminalHistoryIndex];
+                                }
+                            } else if (e.key === 'ArrowDown') {
+                                e.preventDefault();
+                                if (this.terminalHistoryIndex < this.terminalHistory.length - 1) {
+                                    this.terminalHistoryIndex++;
+                                    terminalInput.value = this.terminalHistory[this.terminalHistoryIndex];
+                                } else {
+                                    this.terminalHistoryIndex = this.terminalHistory.length;
+                                    terminalInput.value = '';
+                                }
+                            }
+                        });
                     }
-                });
+                } catch (error) {
+                    console.warn('Error setting up terminal:', error);
+                }
             }
 
             changeLanguage(language) {
@@ -2193,359 +1844,22 @@ grid-gap: \${2:1rem};`,
                     'sql': 'sql>',
                     'json': 'json>'
                 };
-                prompt.textContent = prompts[language] || 'term$';
+                if (prompt) {
+                    prompt.textContent = prompts[language] || 'term$';
+                }
                 
                 this.addTerminalOutput(`Switched to ${language.toUpperCase()} mode`, 'command-info');
-                this.triggerAutoSave();
             }
 
             executeTerminalCommand(command) {
-                // Mask sensitive data in terminal commands
                 const maskedCommand = this.maskSensitiveData(command);
                 this.addTerminalOutput(`${document.getElementById('terminalPrompt').textContent} ${maskedCommand}`, 'command-success');
 
-                // Check for sensitive data in command
                 const sensitiveFindings = this.detectSensitiveData(command);
                 if (sensitiveFindings.length > 0) {
                     this.addTerminalOutput('🔒 Security Alert: Sensitive data detected and masked', 'command-security');
                 }
 
-                // Language-specific command execution
-                switch (this.currentLanguage) {
-                    case 'html':
-                        this.executeHTMLCommand(command);
-                        break;
-                    case 'css':
-                        this.executeCSSCommand(command);
-                        break;
-                    case 'javascript':
-                        this.executeJavaScriptCommand(command);
-                        break;
-                    case 'typescript':
-                        this.executeTypeScriptCommand(command);
-                        break;
-                    case 'node':
-                        this.executeNodeCommand(command);
-                        break;
-                    case 'react':
-                        this.executeReactCommand(command);
-                        break;
-                    case 'nextjs':
-                        this.executeNextJSCommand(command);
-                        break;
-                    case 'python':
-                        this.executePythonCommand(command);
-                        break;
-                    case 'java':
-                        this.executeJavaCommand(command);
-                        break;
-                    case 'cpp':
-                        this.executeCppCommand(command);
-                        break;
-                    case 'csharp':
-                        this.executeCSharpCommand(command);
-                        break;
-                    case 'php':
-                        this.executePHPCommand(command);
-                        break;
-                    case 'ruby':
-                        this.executeRubyCommand(command);
-                        break;
-                    case 'go':
-                        this.executeGoCommand(command);
-                        break;
-                    case 'rust':
-                        this.executeRustCommand(command);
-                        break;
-                    case 'swift':
-                        this.executeSwiftCommand(command);
-                        break;
-                    case 'sql':
-                        this.executeSQLCommand(command);
-                        break;
-                    case 'json':
-                        this.executeJSONCommand(command);
-                        break;
-                    default:
-                        this.executeBashCommand(command);
-                }
-
-                this.triggerAutoSave();
-            }
-
-            executeHTMLCommand(command) {
-                if (command.includes('validate')) {
-                    this.addTerminalOutput('🔍 Validating HTML structure...', 'command-info');
-                    this.addTerminalOutput('✅ HTML validation complete', 'command-success');
-                } else if (command.includes('minify')) {
-                    this.addTerminalOutput('📦 Minifying HTML...', 'command-info');
-                    this.addTerminalOutput('✅ HTML minified successfully', 'command-success');
-                } else {
-                    this.addTerminalOutput('HTML command executed', 'command-success');
-                }
-            }
-
-            executeCSSCommand(command) {
-                if (command.includes('compile')) {
-                    this.addTerminalOutput('🎨 Compiling CSS...', 'command-info');
-                    this.addTerminalOutput('✅ CSS compiled successfully', 'command-success');
-                } else if (command.includes('autoprefixer')) {
-                    this.addTerminalOutput('🔧 Adding vendor prefixes...', 'command-info');
-                    this.addTerminalOutput('✅ Autoprefixer applied', 'command-success');
-                } else {
-                    this.addTerminalOutput('CSS command executed', 'command-success');
-                }
-            }
-
-            executeJavaScriptCommand(command) {
-                if (command.includes('npm install')) {
-                    this.addTerminalOutput('📦 Installing JavaScript packages...', 'command-info');
-                    setTimeout(() => {
-                        this.addTerminalOutput('✅ Packages installed successfully', 'command-success');
-                    }, 1000);
-                } else if (command.includes('console.log')) {
-                    const maskedCommand = this.maskSensitiveData(command);
-                    try {
-                        const result = eval(maskedCommand);
-                        this.addTerminalOutput(result || 'undefined', 'command-success');
-                    } catch (error) {
-                        this.addTerminalOutput(`Error: ${error.message}`, 'command-error');
-                    }
-                } else {
-                    this.addTerminalOutput('JavaScript command executed', 'command-success');
-                }
-            }
-
-            executeTypeScriptCommand(command) {
-                if (command.includes('tsc')) {
-                    this.addTerminalOutput('🔷 Compiling TypeScript...', 'command-info');
-                    this.addTerminalOutput('✅ TypeScript compiled successfully', 'command-success');
-                } else if (command.includes('type-check')) {
-                    this.addTerminalOutput('🔍 Type checking...', 'command-info');
-                    this.addTerminalOutput('✅ No type errors found', 'command-success');
-                } else {
-                    this.addTerminalOutput('TypeScript command executed', 'command-success');
-                }
-            }
-
-            executeNodeCommand(command) {
-                if (command.includes('npm install')) {
-                    this.addTerminalOutput('📦 Installing Node.js packages...', 'command-info');
-                    setTimeout(() => {
-                        this.addTerminalOutput('✅ Packages installed successfully', 'command-success');
-                    }, 1000);
-                } else if (command.includes('npm start')) {
-                    this.addTerminalOutput('🚀 Starting Node.js server...', 'command-info');
-                    this.addTerminalOutput('Server running on http://localhost:3000', 'command-success');
-                } else if (command.includes('node --version')) {
-                    this.addTerminalOutput('v18.17.0', 'command-success');
-                } else {
-                    this.addTerminalOutput('Node.js command executed', 'command-success');
-                }
-            }
-
-            executeReactCommand(command) {
-                if (command.includes('create-react-app')) {
-                    this.addTerminalOutput('⚛️ Creating React application...', 'command-info');
-                    setTimeout(() => {
-                        this.addTerminalOutput('✅ React app created successfully!', 'command-success');
-                        this.addTerminalOutput('Run: npm start', 'command-info');
-                    }, 2000);
-                } else if (command.includes('npm start')) {
-                    this.addTerminalOutput('⚛️ Starting React development server...', 'command-info');
-                    this.addTerminalOutput('React app running on http://localhost:3000', 'command-success');
-                } else if (command.includes('npm build')) {
-                    this.addTerminalOutput('📦 Building React app for production...', 'command-info');
-                    this.addTerminalOutput('✅ Build completed successfully', 'command-success');
-                } else {
-                    this.addTerminalOutput('React command executed', 'command-success');
-                }
-            }
-
-            executeNextJSCommand(command) {
-                if (command.includes('create-next-app')) {
-                    this.addTerminalOutput('▲ Creating Next.js application...', 'command-info');
-                    setTimeout(() => {
-                        this.addTerminalOutput('✅ Next.js app created successfully!', 'command-success');
-                        this.addTerminalOutput('Run: npm run dev', 'command-info');
-                    }, 2500);
-                } else if (command.includes('npm run dev')) {
-                    this.addTerminalOutput('▲ Starting Next.js development server...', 'command-info');
-                    this.addTerminalOutput('Next.js app running on http://localhost:3000', 'command-success');
-                } else if (command.includes('npm run build')) {
-                    this.addTerminalOutput('📦 Building Next.js app...', 'command-info');
-                    this.addTerminalOutput('✅ Next.js build completed', 'command-success');
-                } else {
-                    this.addTerminalOutput('Next.js command executed', 'command-success');
-                }
-            }
-
-            executePythonCommand(command) {
-                if (command.includes('pip install')) {
-                    this.addTerminalOutput('🐍 Installing Python package...', 'command-info');
-                    setTimeout(() => {
-                        this.addTerminalOutput('✅ Package installed successfully', 'command-success');
-                    }, 1000);
-                } else if (command.includes('print(')) {
-                    const maskedCommand = this.maskSensitiveData(command);
-                    const match = maskedCommand.match(/print\((.*)$/);
-                    if (match) {
-                        this.addTerminalOutput(match[1].replace(/['"]/g, ''), 'command-success');
-                    }
-                } else if (command.includes('django-admin startproject')) {
-                    this.addTerminalOutput('🎯 Creating Django project...', 'command-info');
-                    this.addTerminalOutput('✅ Django project created successfully', 'command-success');
-                } else if (command.includes('flask run')) {
-                    this.addTerminalOutput('🌶️ Starting Flask server...', 'command-info');
-                    this.addTerminalOutput('Flask app running on http://localhost:5000', 'command-success');
-                } else {
-                    this.addTerminalOutput('Python command executed', 'command-success');
-                }
-            }
-
-            executeJavaCommand(command) {
-                if (command.includes('javac')) {
-                    this.addTerminalOutput('☕ Compiling Java code...', 'command-info');
-                    this.addTerminalOutput('✅ Compilation successful', 'command-success');
-                } else if (command.includes('java ')) {
-                    this.addTerminalOutput('🚀 Running Java application...', 'command-info');
-                    this.addTerminalOutput('Hello World!', 'command-success');
-                } else if (command.includes('mvn')) {
-                    this.addTerminalOutput('📦 Running Maven command...', 'command-info');
-                    this.addTerminalOutput('✅ Maven build successful', 'command-success');
-                } else {
-                    this.addTerminalOutput('Java command executed', 'command-success');
-                }
-            }
-
-            executeCppCommand(command) {
-                if (command.includes('g++')) {
-                    this.addTerminalOutput('⚙️ Compiling C++ code...', 'command-info');
-                    this.addTerminalOutput('✅ C++ compilation successful', 'command-success');
-                } else if (command.includes('./')) {
-                    this.addTerminalOutput('🚀 Running C++ executable...', 'command-info');
-                    this.addTerminalOutput('Hello World!', 'command-success');
-                } else {
-                    this.addTerminalOutput('C++ command executed', 'command-success');
-                }
-            }
-
-            executeCSharpCommand(command) {
-                if (command.includes('dotnet build')) {
-                    this.addTerminalOutput('🔷 Building C# project...', 'command-info');
-                    this.addTerminalOutput('✅ Build succeeded', 'command-success');
-                } else if (command.includes('dotnet run')) {
-                    this.addTerminalOutput('🚀 Running C# application...', 'command-info');
-                    this.addTerminalOutput('Hello World!', 'command-success');
-                } else if (command.includes('dotnet new')) {
-                    this.addTerminalOutput('📦 Creating new C# project...', 'command-info');
-                    this.addTerminalOutput('✅ Project created successfully', 'command-success');
-                } else {
-                    this.addTerminalOutput('C# command executed', 'command-success');
-                }
-            }
-
-            executePHPCommand(command) {
-                if (command.includes('composer install')) {
-                    this.addTerminalOutput('🎼 Installing PHP dependencies...', 'command-info');
-                    this.addTerminalOutput('✅ Dependencies installed', 'command-success');
-                } else if (command.includes('php -S')) {
-                    this.addTerminalOutput('🐘 Starting PHP development server...', 'command-info');
-                    this.addTerminalOutput('PHP server running on http://localhost:8000', 'command-success');
-                } else if (command.includes('laravel new')) {
-                    this.addTerminalOutput('🎨 Creating Laravel project...', 'command-info');
-                    this.addTerminalOutput('✅ Laravel project created', 'command-success');
-                } else {
-                    this.addTerminalOutput('PHP command executed', 'command-success');
-                }
-            }
-
-            executeRubyCommand(command) {
-                if (command.includes('gem install')) {
-                    this.addTerminalOutput('💎 Installing Ruby gem...', 'command-info');
-                    this.addTerminalOutput('✅ Gem installed successfully', 'command-success');
-                } else if (command.includes('rails new')) {
-                    this.addTerminalOutput('🚂 Creating Rails application...', 'command-info');
-                    this.addTerminalOutput('✅ Rails app created successfully', 'command-success');
-                } else if (command.includes('rails server')) {
-                    this.addTerminalOutput('🚂 Starting Rails server...', 'command-info');
-                    this.addTerminalOutput('Rails app running on http://localhost:3000', 'command-success');
-                } else {
-                    this.addTerminalOutput('Ruby command executed', 'command-success');
-                }
-            }
-
-            executeGoCommand(command) {
-                if (command.includes('go build')) {
-                    this.addTerminalOutput('🐹 Building Go application...', 'command-info');
-                    this.addTerminalOutput('✅ Build successful', 'command-success');
-                } else if (command.includes('go run')) {
-                    this.addTerminalOutput('🚀 Running Go application...', 'command-info');
-                    this.addTerminalOutput('Hello World!', 'command-success');
-                } else if (command.includes('go mod init')) {
-                    this.addTerminalOutput('📦 Initializing Go module...', 'command-info');
-                    this.addTerminalOutput('✅ Go module initialized', 'command-success');
-                } else {
-                    this.addTerminalOutput('Go command executed', 'command-success');
-                }
-            }
-
-            executeRustCommand(command) {
-                if (command.includes('cargo build')) {
-                    this.addTerminalOutput('🦀 Building Rust project...', 'command-info');
-                    this.addTerminalOutput('✅ Build finished', 'command-success');
-                } else if (command.includes('cargo run')) {
-                    this.addTerminalOutput('🚀 Running Rust application...', 'command-info');
-                    this.addTerminalOutput('Hello World!', 'command-success');
-                } else if (command.includes('cargo new')) {
-                    this.addTerminalOutput('📦 Creating new Rust project...', 'command-info');
-                    this.addTerminalOutput('✅ Rust project created', 'command-success');
-                } else {
-                    this.addTerminalOutput('Rust command executed', 'command-success');
-                }
-            }
-
-            executeSwiftCommand(command) {
-                if (command.includes('swift build')) {
-                    this.addTerminalOutput('🍎 Building Swift project...', 'command-info');
-                    this.addTerminalOutput('✅ Build succeeded', 'command-success');
-                } else if (command.includes('swift run')) {
-                    this.addTerminalOutput('🚀 Running Swift application...', 'command-info');
-                    this.addTerminalOutput('Hello World!', 'command-success');
-                } else if (command.includes('swift package init')) {
-                    this.addTerminalOutput('📦 Initializing Swift package...', 'command-info');
-                    this.addTerminalOutput('✅ Swift package created', 'command-success');
-                } else {
-                    this.addTerminalOutput('Swift command executed', 'command-success');
-                }
-            }
-
-            executeSQLCommand(command) {
-                const maskedCommand = this.maskSensitiveData(command);
-                const sqlKeywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP', 'ALTER'];
-                const isSQL = sqlKeywords.some(keyword => maskedCommand.toUpperCase().includes(keyword));
-                
-                if (isSQL) {
-                    this.addTerminalOutput('🗄️ Executing SQL query...', 'command-info');
-                    this.addTerminalOutput('✅ Query executed successfully', 'command-success');
-                } else {
-                    this.addTerminalOutput('Invalid SQL command', 'command-error');
-                }
-            }
-
-            executeJSONCommand(command) {
-                if (command.includes('validate')) {
-                    this.addTerminalOutput('🔍 Validating JSON...', 'command-info');
-                    this.addTerminalOutput('✅ JSON is valid', 'command-success');
-                } else if (command.includes('format')) {
-                    this.addTerminalOutput('📝 Formatting JSON...', 'command-info');
-                    this.addTerminalOutput('✅ JSON formatted', 'command-success');
-                } else {
-                    this.addTerminalOutput('JSON command executed', 'command-success');
-                }
-            }
-
-            executeBashCommand(command) {
                 const cmd = command.toLowerCase();
                 
                 switch (cmd) {
@@ -2556,37 +1870,7 @@ grid-gap: \${2:1rem};`,
 - clear: Clear terminal
 - run: Run current file
 - info: Show system information
-- langs: Show language-specific help
-- security: Show security information
-- frameworks: Show supported frameworks`, 'command-info');
-                        break;
-                    case 'security':
-                        this.addTerminalOutput(`🔒 Security Features:
-- Automatic detection of passwords, API keys, tokens
-- Sensitive data masked with asterisks (********)
-- Real-time security alerts
-- Protected patterns: passwords, api_keys, tokens, secrets, hashes
-- Environment variable protection
-- JWT token masking
-- Database credential protection
-- Preview page security masking`, 'command-security');
-                        break;
-                    case 'langs':
-                        this.addTerminalOutput(`🚀 Supported Languages:
-Frontend: HTML, CSS, JavaScript, TypeScript
-Backend: Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift
-Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Rails
-Database: SQL, JSON
-Shell: Bash
-Use language selector to switch modes`, 'command-info');
-                        break;
-                    case 'frameworks':
-                        this.addTerminalOutput(`🔧 Supported Frameworks:
-Web: React.js, Next.js, Vue.js, Angular
-Backend: Node.js, Django, Flask, Laravel, Rails, Spring, .NET
-Mobile: React Native, Flutter
-Database: MySQL, PostgreSQL, MongoDB
-Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
+- settings: Show current settings`, 'command-info');
                         break;
                     case 'ls':
                         if (this.files.size === 0) {
@@ -2597,15 +1881,18 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                         }
                         break;
                     case 'clear':
-                        document.getElementById('terminalOutput').innerHTML = `
-                            <div class="command-success">Code Studio Pro Universal Programming Terminal v3.0</div>
-                            <div class="command-info">🚀 Full Language Support: HTML, CSS, JS, TS, Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL</div>
-                            <div class="command-info">🔧 Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Spring, .NET, Rails</div>
-                            <div class="command-info">✨ Auto-completion enabled for all languages</div>
-                            <div class="command-warning">Type 'help' for commands or 'langs' for language-specific help</div>
-                            <div class="command-security">🔒 Security: Sensitive data automatically masked</div>
-                            <div></div>
-                        `;
+                        const terminalOutput = document.getElementById('terminalOutput');
+                        if (terminalOutput) {
+                            terminalOutput.innerHTML = `
+                                <div class="command-success">Code Studio Pro IDE  Universal Programming Terminal v4.0</div>
+                                <div class="command-info">🚀 Full Language Support: HTML, CSS, JS, TS, Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL</div>
+                                <div class="command-info">🔧 Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Spring, .NET, Rails</div>
+                                <div class="command-info">✨ Auto-completion enabled for all languages</div>
+                                <div class="command-warning">Type 'help' for commands or 'langs' for language-specific help</div>
+                                <div class="command-security">🔒 Security: Sensitive data automatically masked</div>
+                                <div></div>
+                            `;
+                        }
                         return;
                     case 'run':
                         this.runCurrentFile();
@@ -2618,10 +1905,17 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
 - Storage Used: ${this.getStorageUsage()} bytes
 - Font Size: ${this.fontSize}px
 - Language Mode: ${this.currentLanguage.toUpperCase()}
-- Security: Active
-- Auto-completion: Enabled
 - Theme: ${this.theme}
-- AutoSave: ${this.autosaveInterval / 1000}s`, 'command-info');
+- AutoSave: ${this.autoSaveInterval}s interval`, 'command-info');
+                        break;
+                    case 'settings':
+                        this.addTerminalOutput(`⚙️ Current Settings:
+- Theme: ${this.theme}
+- Font Size: ${this.fontSize}px
+- Tab Size: ${this.tabSize} spaces
+- AutoSave Interval: ${this.autoSaveInterval}s
+- Notifications: ${this.notificationsEnabled ? 'Enabled' : 'Disabled'}
+- Windows: ${Object.values(this.windowStates).filter(Boolean).length}/4 visible`, 'command-info');
                         break;
                     default:
                         this.addTerminalOutput(`Command not found: ${command}. Type 'help' for available commands.`, 'command-error');
@@ -2630,11 +1924,13 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
 
             addTerminalOutput(text, className = 'command-output') {
                 const output = document.getElementById('terminalOutput');
-                const line = document.createElement('div');
-                line.className = `command-output ${className}`;
-                line.textContent = text;
-                output.appendChild(line);
-                output.scrollTop = output.scrollHeight;
+                if (output) {
+                    const line = document.createElement('div');
+                    line.className = `command-output ${className}`;
+                    line.textContent = text;
+                    output.appendChild(line);
+                    output.scrollTop = output.scrollHeight;
+                }
             }
 
             async handleFiles(fileList) {
@@ -2648,8 +1944,8 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                         
                         const fileData = {
                             name: file.name,
-                            content: content, // Store original content
-                            maskedContent: this.maskSensitiveData(content), // Store masked version
+                            content: content,
+                            maskedContent: this.maskSensitiveData(content),
                             type: this.getFileType(file.name),
                             size: file.size,
                             lastModified: Date.now(),
@@ -2661,20 +1957,15 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                         this.saveToStorage();
                         this.updateFileList();
                         
-                        // Show security alert if sensitive data found
                         if (hasSensitiveData) {
                             this.showSecurityAlert(file.name, sensitiveFindings.length);
                         }
                         
-                        // Show file analysis popup
                         this.showFileAnalysis(fileData);
                         
-                        // Auto-select first file
                         if (this.files.size === 1) {
                             this.selectFile(file.name);
                         }
-
-                        this.triggerAutoSave();
                     } catch (error) {
                         this.showNotification(`Error reading file ${file.name}: ${error.message}`, 'error');
                     }
@@ -2690,27 +1981,29 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                 const analysis = this.analyzeFile(fileData);
                 const popupContent = document.getElementById('popupContent');
                 
-                popupContent.innerHTML = `
-                    <h3>📄 ${fileData.name}</h3>
-                    <p><strong>Language:</strong> ${analysis.language}</p>
-                    <p><strong>File Size:</strong> ${this.formatFileSize(fileData.size)}</p>
-                    <p><strong>Lines of Code:</strong> ${fileData.content.split('\n').length}</p>
-                    ${fileData.hasSensitiveData ? `
-                        <p><strong>🔒 Security Status:</strong> <span class="tech-tag security-tag">Sensitive Data Detected</span></p>
-                        <p><strong>Sensitive Patterns:</strong> ${fileData.sensitiveFindings.length} found and masked</p>
-                    ` : `
-                        <p><strong>🔒 Security Status:</strong> <span class="tech-tag">Safe</span></p>
-                    `}
-                    ${analysis.frameworks.length > 0 ? `
-                        <p><strong>Frameworks/Technologies:</strong></p>
-                        <div>
-                            ${analysis.frameworks.map(fw => `<span class="tech-tag">${fw}</span>`).join('')}
-                        </div>
-                    ` : ''}
-                    ${analysis.description ? `<p><strong>Description:</strong> ${analysis.description}</p>` : ''}
-                `;
-                
-                this.showPopup();
+                if (popupContent) {
+                    popupContent.innerHTML = `
+                        <h3>📄 ${fileData.name}</h3>
+                        <p><strong>Language:</strong> ${analysis.language}</p>
+                        <p><strong>File Size:</strong> ${this.formatFileSize(fileData.size)}</p>
+                        <p><strong>Lines of Code:</strong> ${fileData.content.split('\n').length}</p>
+                        ${fileData.hasSensitiveData ? `
+                            <p><strong>🔒 Security Status:</strong> <span class="tech-tag security-tag">Sensitive Data Detected</span></p>
+                            <p><strong>Sensitive Patterns:</strong> ${fileData.sensitiveFindings.length} found and masked</p>
+                        ` : `
+                            <p><strong>🔒 Security Status:</strong> <span class="tech-tag">Safe</span></p>
+                        `}
+                        ${analysis.frameworks.length > 0 ? `
+                            <p><strong>Frameworks/Technologies:</strong></p>
+                            <div>
+                                ${analysis.frameworks.map(fw => `<span class="tech-tag">${fw}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                        ${analysis.description ? `<p><strong>Description:</strong> ${analysis.description}</p>` : ''}
+                    `;
+                    
+                    this.showPopup();
+                }
             }
 
             analyzeFile(fileData) {
@@ -2737,33 +2030,6 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                 if (content.includes('next') || content.includes('next/')) {
                     frameworks.push('Next.js');
                 }
-                if (content.includes('django') || content.includes('from django')) {
-                    frameworks.push('Django');
-                }
-                if (content.includes('flask') || content.includes('from flask')) {
-                    frameworks.push('Flask');
-                }
-                if (content.includes('laravel') || content.includes('artisan')) {
-                    frameworks.push('Laravel');
-                }
-                if (content.includes('rails') || content.includes('activerecord')) {
-                    frameworks.push('Ruby on Rails');
-                }
-                if (content.includes('spring') || content.includes('@springboot')) {
-                    frameworks.push('Spring');
-                }
-                if (content.includes('.net') || content.includes('using system')) {
-                    frameworks.push('.NET');
-                }
-                if (content.includes('bootstrap') || content.includes('btn-')) {
-                    frameworks.push('Bootstrap');
-                }
-                if (content.includes('tailwind') || content.includes('tw-')) {
-                    frameworks.push('Tailwind CSS');
-                }
-                if (content.includes('jquery') || content.includes('$(')) {
-                    frameworks.push('jQuery');
-                }
 
                 // Generate description based on file type
                 switch (extension) {
@@ -2781,38 +2047,6 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                         break;
                     case 'py':
                         description = 'Python script for backend logic';
-                        break;
-                    case 'java':
-                        description = 'Java source code file';
-                        break;
-                    case 'cpp':
-                    case 'cc':
-                    case 'cxx':
-                        description = 'C++ source code file';
-                        break;
-                    case 'cs':
-                        description = 'C# source code file';
-                        break;
-                    case 'php':
-                        description = 'PHP server-side script';
-                        break;
-                    case 'rb':
-                        description = 'Ruby script file';
-                        break;
-                    case 'go':
-                        description = 'Go programming language file';
-                        break;
-                    case 'rs':
-                        description = 'Rust source code file';
-                        break;
-                    case 'swift':
-                        description = 'Swift programming language file';
-                        break;
-                    case 'sql':
-                        description = 'SQL database script';
-                        break;
-                    case 'json':
-                        description = 'JSON data file for configuration or data storage';
                         break;
                     default:
                         description = `${language} source code file`;
@@ -2838,11 +2072,7 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                     'rust': 'Rust',
                     'swift': 'Swift',
                     'sql': 'SQL',
-                    'json': 'JSON',
-                    'xml': 'XML',
-                    'markdown': 'Markdown',
-                    'bash': 'Bash',
-                    'shell': 'Shell'
+                    'json': 'JSON'
                 };
                 return languageMap[type] || type.toUpperCase();
             }
@@ -2856,11 +2086,17 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
             }
 
             showPopup() {
-                document.getElementById('popupOverlay').style.display = 'flex';
+                const popup = document.getElementById('popupOverlay');
+                if (popup) {
+                    popup.style.display = 'flex';
+                }
             }
 
             hidePopup() {
-                document.getElementById('popupOverlay').style.display = 'none';
+                const popup = document.getElementById('popupOverlay');
+                if (popup) {
+                    popup.style.display = 'none';
+                }
             }
 
             readFile(file) {
@@ -2883,12 +2119,9 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                     'ts': 'typescript',
                     'tsx': 'typescript',
                     'json': 'json',
-                    'xml': 'xml',
                     'py': 'python',
                     'java': 'java',
                     'cpp': 'cpp',
-                    'cc': 'cpp',
-                    'cxx': 'cpp',
                     'c': 'c',
                     'cs': 'csharp',
                     'php': 'php',
@@ -2897,20 +2130,19 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                     'rs': 'rust',
                     'swift': 'swift',
                     'sql': 'sql',
-                    'md': 'markdown',
-                    'txt': 'plaintext',
-                    'sh': 'bash',
-                    'bash': 'bash'
+                    'sh': 'bash'
                 };
                 return typeMap[ext] || 'plaintext';
             }
 
             updateFileList() {
                 const fileList = document.getElementById('fileList');
+                if (!fileList) return;
+
                 fileList.innerHTML = '';
 
                 if (this.files.size === 0) {
-                    fileList.innerHTML = '<div style="color: var(--text-muted); font-style: italic; text-align: center; padding: 2rem;">No files uploaded yet</div>';
+                    fileList.innerHTML = '<div style="color: #969696; font-style: italic; text-align: center; padding: 2rem;">No files uploaded yet</div>';
                     return;
                 }
 
@@ -2933,13 +2165,19 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                             <div class="file-name">${filename} ${securityIndicator}</div>
                             <div class="file-meta">${this.getLanguageName(fileData.type)} • ${this.formatFileSize(fileData.size)}</div>
                         </div>
-                        <span class="file-delete" onclick="codeStudio.deleteFile('${filename}')">&times;</span>
+                        <span class="file-delete" data-filename="${filename}">&times;</span>
                     `;
 
                     fileItem.addEventListener('click', (e) => {
                         if (!e.target.classList.contains('file-delete')) {
                             this.selectFile(filename);
                         }
+                    });
+
+                    const deleteBtn = fileItem.querySelector('.file-delete');
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.deleteFile(filename);
                     });
 
                     fileList.appendChild(fileItem);
@@ -2953,23 +2191,32 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                 const fileData = this.files.get(filename);
                 
                 if (this.editor) {
-                    // Display masked content in editor for security
                     this.editor.setValue(fileData.maskedContent);
-                    monaco.editor.setModelLanguage(this.editor.getModel(), fileData.type);
+                    try {
+                        monaco.editor.setModelLanguage(this.editor.getModel(), fileData.type);
+                        monaco.editor.setTheme(this.theme === 'light' ? 'vs' : 'vs-dark');
+                    } catch (error) {
+                        console.warn('Error setting editor language/theme:', error);
+                    }
+                } else if (this.editorFallback) {
+                    this.editorFallback.value = fileData.maskedContent;
                 }
 
-                // Show security alert if file contains sensitive data
                 if (fileData.hasSensitiveData) {
                     const securityAlert = document.getElementById('securityAlert');
-                    securityAlert.innerHTML = `🔒 Security Alert: This file contains ${fileData.sensitiveFindings.length} sensitive data pattern(s) that have been masked with asterisks for security.`;
-                    securityAlert.style.display = 'block';
+                    if (securityAlert) {
+                        securityAlert.innerHTML = `🔒 Security Alert: This file contains ${fileData.sensitiveFindings.length} sensitive data pattern(s) that have been masked with asterisks for security.`;
+                        securityAlert.style.display = 'block';
+                    }
                 } else {
-                    document.getElementById('securityAlert').style.display = 'none';
+                    const securityAlert = document.getElementById('securityAlert');
+                    if (securityAlert) {
+                        securityAlert.style.display = 'none';
+                    }
                 }
 
                 this.updateFileList();
                 this.updateRunButton();
-                this.triggerAutoSave();
             }
 
             deleteFile(filename) {
@@ -2979,29 +2226,39 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                     this.currentFile = null;
                     if (this.editor) {
                         this.editor.setValue('// Select a file to edit');
+                    } else if (this.editorFallback) {
+                        this.editorFallback.value = '// Select a file to edit';
                     }
-                    document.getElementById('securityAlert').style.display = 'none';
+                    const securityAlert = document.getElementById('securityAlert');
+                    if (securityAlert) {
+                        securityAlert.style.display = 'none';
+                    }
                 }
 
                 this.saveToStorage();
                 this.updateFileList();
                 this.updateRunButton();
                 this.showNotification(`File "${filename}" deleted successfully`);
-                this.triggerAutoSave();
             }
 
-            saveCurrentFile(isAutoSave = false) {
-                if (!this.currentFile || !this.editor) return;
+            saveCurrentFile() {
+                if (!this.currentFile || (!this.editor && !this.editorFallback)) return;
 
-                const content = this.editor.getValue();
+                let content;
+                if (this.editor) {
+                    content = this.editor.getValue();
+                } else if (this.editorFallback) {
+                    content = this.editorFallback.value;
+                } else {
+                    return;
+                }
+
                 const fileData = this.files.get(this.currentFile);
                 
-                // Update both original and masked content
                 fileData.content = content;
                 fileData.maskedContent = this.maskSensitiveData(content);
                 fileData.lastModified = Date.now();
                 
-                // Re-check for sensitive data
                 const sensitiveFindings = this.detectSensitiveData(content);
                 fileData.hasSensitiveData = sensitiveFindings.length > 0;
                 fileData.sensitiveFindings = sensitiveFindings;
@@ -3009,32 +2266,35 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                 this.files.set(this.currentFile, fileData);
                 this.saveToStorage();
                 
-                if (!isAutoSave) {
+                if (this.notificationsEnabled) {
                     this.showNotification('File saved successfully');
                 }
                 
-                // Update security alert if needed
                 if (fileData.hasSensitiveData) {
                     const securityAlert = document.getElementById('securityAlert');
-                    securityAlert.innerHTML = `🔒 Security Alert: This file contains ${fileData.sensitiveFindings.length} sensitive data pattern(s) that have been masked with asterisks for security.`;
-                    securityAlert.style.display = 'block';
+                    if (securityAlert) {
+                        securityAlert.innerHTML = `🔒 Security Alert: This file contains ${fileData.sensitiveFindings.length} sensitive data pattern(s) that have been masked with asterisks for security.`;
+                        securityAlert.style.display = 'block';
+                    }
                 }
             }
 
             updateRunButton() {
                 const runBtn = document.getElementById('runBtn');
-                const canRun = this.currentFile && 
-                              this.files.has(this.currentFile) && 
-                              ['html', 'javascript', 'typescript', 'css', 'python', 'java'].includes(this.files.get(this.currentFile).type);
-                
-                runBtn.disabled = !canRun;
+                if (runBtn) {
+                    const canRun = this.currentFile && 
+                                  this.files.has(this.currentFile) && 
+                                  ['html', 'javascript', 'typescript'].includes(this.files.get(this.currentFile).type);
+                    
+                    runBtn.disabled = !canRun;
+                }
             }
 
             runCurrentFile() {
                 if (!this.currentFile || !this.files.has(this.currentFile)) return;
 
                 const fileData = this.files.get(this.currentFile);
-                this.saveCurrentFile(); // Save before running
+                this.saveCurrentFile();
                 
                 if (fileData.type === 'html') {
                     this.runHTMLFile(fileData);
@@ -3043,12 +2303,9 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                 } else {
                     this.showNotification('File type not supported for execution', 'error');
                 }
-
-                this.triggerAutoSave();
             }
 
             runHTMLFile(fileData) {
-                // Use masked content for preview to ensure sensitive data is hidden
                 const newWindow = window.open('', '_blank');
                 newWindow.document.write(fileData.maskedContent);
                 newWindow.document.close();
@@ -3062,7 +2319,6 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
 
             runJavaScriptFile(fileData) {
                 try {
-                    // Use original content for execution, but warn about sensitive data
                     if (fileData.hasSensitiveData) {
                         this.addTerminalOutput('⚠️ Warning: Executing file with sensitive data', 'command-warning');
                     }
@@ -3080,35 +2336,134 @@ Tools: Webpack, Vite, Babel, ESLint`, 'command-info');
                 this.fontSize = Math.max(8, Math.min(32, this.fontSize + delta));
                 if (this.editor) {
                     this.editor.updateOptions({ fontSize: this.fontSize });
+                } else if (this.editorFallback) {
+                    this.editorFallback.style.fontSize = this.fontSize + 'px';
                 }
-                
-                // Update settings UI
-                document.getElementById('fontSizeSetting').value = this.fontSize;
-                
-                this.showNotification(`Font size: ${this.fontSize}px`);
+                const fontSizeInput = document.getElementById('fontSizeSetting');
+                if (fontSizeInput) {
+                    fontSizeInput.value = this.fontSize;
+                }
                 this.saveSettings();
-                this.triggerAutoSave();
+                this.showNotification(`Font size: ${this.fontSize}px`);
             }
 
             clearAllData() {
                 this.files.clear();
                 this.currentFile = null;
                 
+                const welcomeMessage = this.getWelcomeMessage() + '\n\n// All data cleared - Upload new files to get started!';
+                
                 if (this.editor) {
-                    this.editor.setValue(`// All data cleared
-// 🚀 Full Language Support: HTML, CSS, JS, TS, Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL
-// 🔧 Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Spring, .NET, Rails
-// ✨ Auto-completion enabled for all languages
-// Upload new files to get started!`);
+                    this.editor.setValue(welcomeMessage);
+                } else if (this.editorFallback) {
+                    this.editorFallback.value = welcomeMessage;
                 }
                 
-                document.getElementById('securityAlert').style.display = 'none';
+                const securityAlert = document.getElementById('securityAlert');
+                if (securityAlert) {
+                    securityAlert.style.display = 'none';
+                }
                 
                 this.saveToStorage();
                 this.updateFileList();
                 this.updateRunButton();
                 
                 // Clear terminal
-                document.getElementById('terminalOutput').innerHTML = `
-                    <div class="command-success">Code Studio Pro Universal Programming Terminal v3.0</div>
-                    <div class="command-info">🚀 
+                const terminalOutput = document.getElementById('terminalOutput');
+                if (terminalOutput) {
+                    terminalOutput.innerHTML = `
+                        <div class="command-success">Code Studio Pro IDE  Universal Programming Terminal v4.0</div>
+                        <div class="command-info">🚀 Full Language Support: HTML, CSS, JS, TS, Python, Java, C++, C#, PHP, Ruby, Go, Rust, Swift, SQL</div>
+                        <div class="command-info">🔧 Frameworks: React, Next.js, Node.js, Django, Flask, Laravel, Spring, .NET, Rails</div>
+                        <div class="command-info">✨ Auto-completion enabled for all languages</div>
+                        <div class="command-warning">Type 'help' for commands or 'langs' for language-specific help</div>
+                        <div class="command-security">🔒 Security: Sensitive data automatically masked</div>
+                        <div></div>
+                    `;
+                }
+                
+                this.showNotification('All data cleared successfully');
+            }
+
+            showNotification(message, type = 'success') {
+                if (!this.notificationsEnabled) return;
+
+                const notification = document.getElementById('notification');
+                const notificationText = document.getElementById('notificationText');
+                
+                if (notification && notificationText) {
+                    notificationText.textContent = message;
+                    notification.className = `notification ${type}`;
+                    notification.classList.add('show');
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                    }, 5000);
+                }
+            }
+
+            saveToStorage() {
+                try {
+                    const data = {
+                        files: Array.from(this.files.entries()),
+                        currentFile: this.currentFile,
+                        fontSize: this.fontSize,
+                        currentLanguage: this.currentLanguage,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem(this.storageKey, JSON.stringify(data));
+                } catch (error) {
+                    console.warn('Failed to save to localStorage:', error);
+                }
+            }
+
+            loadFromStorage() {
+                try {
+                    const data = localStorage.getItem(this.storageKey);
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        this.files = new Map(parsed.files);
+                        this.currentFile = parsed.currentFile;
+                        this.fontSize = parsed.fontSize || 14;
+                        this.currentLanguage = parsed.currentLanguage || 'bash';
+                    }
+                } catch (error) {
+                    console.warn('Failed to load from localStorage:', error);
+                }
+            }
+
+            clearStorage() {
+                localStorage.removeItem(this.storageKey);
+            }
+
+            getStorageUsage() {
+                let totalSize = 0;
+                this.files.forEach(file => {
+                    totalSize += new Blob([file.content]).size;
+                });
+                return totalSize;
+            }
+        }
+
+        // Initialize the application
+        let codeStudio;
+        
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing CodeStudio...');
+            codeStudio = new CodeStudioProEnhanced();
+            window.codeStudio = codeStudio;
+        });
+
+        // Fallback initialization if DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            // DOM is still loading
+        } else {
+            // DOM is already loaded
+            console.log('DOM already loaded, initializing CodeStudio...');
+            codeStudio = new CodeStudioProEnhanced();
+            window.codeStudio = codeStudio;
+        }
+    </script>
+</body>
+</html>
