@@ -92,6 +92,20 @@
             background: #464647;
         }
 
+        /* Security indicator */
+        .security-indicator {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+        }
+
+        .security-indicator.safe {
+            background: #4caf50;
+        }
+
         /* Main Content - 4 Window Layout */
         .main-content {
             flex: 1;
@@ -248,6 +262,10 @@
             background: #007acc;
         }
 
+        .file-item.sensitive {
+            border-left: 3px solid #ff6b6b;
+        }
+
         .file-info {
             display: flex;
             flex-direction: column;
@@ -373,6 +391,24 @@
             color: #ffa500;
         }
 
+        .command-security {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+
+        /* Security Alert */
+        .security-alert {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
         /* Notifications */
         .notification {
             position: fixed;
@@ -398,6 +434,10 @@
 
         .notification.error {
             background: #f48771;
+        }
+
+        .notification.security {
+            background: #ff6b6b;
         }
 
         /* Popup Modal */
@@ -458,6 +498,10 @@
             border-radius: 3px;
             font-size: 0.8rem;
             margin: 0.2rem;
+        }
+
+        .security-tag {
+            background: #ff6b6b;
         }
 
         /* Footer */
@@ -604,6 +648,7 @@
             <div class="window-content">
                 <div class="editor-container">
                     <div id="errorPanel" class="error-panel"></div>
+                    <div id="securityAlert" class="security-alert"></div>
                     <div id="editor"></div>
                 </div>
             </div>
@@ -634,6 +679,7 @@
                         <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
                         <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
                         <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
+                        <div class="command-security">🔒 Security: Sensitive data automatically masked with asterisks</div>
                         <div></div>
                     </div>
                     <div class="terminal-input-container">
@@ -685,6 +731,129 @@
                 window.addEventListener('beforeunload', () => {
                     this.clearStorage();
                 });
+            }
+
+            // Security: Detect sensitive data patterns
+            detectSensitiveData(content) {
+                const sensitivePatterns = [
+                    // Password patterns
+                    /password\s*[=:]\s*["']([^"']+)["']/gi,
+                    /pwd\s*[=:]\s*["']([^"']+)["']/gi,
+                    /pass\s*[=:]\s*["']([^"']+)["']/gi,
+                    
+                    // API Key patterns
+                    /api[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
+                    /apikey\s*[=:]\s*["']([^"']+)["']/gi,
+                    /api[_-]?secret\s*[=:]\s*["']([^"']+)["']/gi,
+                    
+                    // Access Key patterns
+                    /access[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
+                    /secret[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
+                    /private[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
+                    
+                    // Token patterns
+                    /token\s*[=:]\s*["']([^"']+)["']/gi,
+                    /auth[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
+                    /bearer[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
+                    /jwt[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
+                    
+                    // Database credentials
+                    /db[_-]?password\s*[=:]\s*["']([^"']+)["']/gi,
+                    /database[_-]?password\s*[=:]\s*["']([^"']+)["']/gi,
+                    /connection[_-]?string\s*[=:]\s*["']([^"']+)["']/gi,
+                    
+                    // Environment variables
+                    /process\.env\.([A-Z_]*(?:PASSWORD|KEY|SECRET|TOKEN)[A-Z_]*)/gi,
+                    /\$\{([A-Z_]*(?:PASSWORD|KEY|SECRET|TOKEN)[A-Z_]*)\}/gi,
+                    
+                    // AWS credentials
+                    /aws[_-]?access[_-]?key[_-]?id\s*[=:]\s*["']([^"']+)["']/gi,
+                    /aws[_-]?secret[_-]?access[_-]?key\s*[=:]\s*["']([^"']+)["']/gi,
+                    
+                    // OAuth patterns
+                    /client[_-]?secret\s*[=:]\s*["']([^"']+)["']/gi,
+                    /oauth[_-]?token\s*[=:]\s*["']([^"']+)["']/gi,
+                    
+                    // Generic secret patterns
+                    /secret\s*[=:]\s*["']([^"']+)["']/gi,
+                    /key\s*[=:]\s*["']([A-Za-z0-9+/]{20,})["']/gi,
+                    
+                    // JWT tokens (base64 pattern)
+                    /eyJ[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+/g,
+                    
+                    // Common hash patterns (MD5, SHA)
+                    /[a-f0-9]{32}/g, // MD5
+                    /[a-f0-9]{40}/g, // SHA1
+                    /[a-f0-9]{64}/g, // SHA256
+                ];
+
+                const findings = [];
+                sensitivePatterns.forEach((pattern, index) => {
+                    const matches = content.match(pattern);
+                    if (matches) {
+                        findings.push(...matches);
+                    }
+                });
+
+                return findings;
+            }
+
+            // Security: Mask sensitive data with asterisks
+            maskSensitiveData(content) {
+                const sensitivePatterns = [
+                    // Password patterns
+                    { pattern: /(password\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(pwd\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(pass\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    
+                    // API Key patterns
+                    { pattern: /(api[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(apikey\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(api[_-]?secret\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    
+                    // Access Key patterns
+                    { pattern: /(access[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(secret[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(private[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    
+                    // Token patterns
+                    { pattern: /(token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(auth[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(bearer[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(jwt[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    
+                    // Database credentials
+                    { pattern: /(db[_-]?password\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(database[_-]?password\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(connection[_-]?string\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    
+                    // AWS credentials
+                    { pattern: /(aws[_-]?access[_-]?key[_-]?id\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(aws[_-]?secret[_-]?access[_-]?key\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    
+                    // OAuth patterns
+                    { pattern: /(client[_-]?secret\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(oauth[_-]?token\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    
+                    // Generic secret patterns
+                    { pattern: /(secret\s*[=:]\s*["'])([^"']+)(["'])/gi, replacement: '$1********$3' },
+                    { pattern: /(key\s*[=:]\s*["'])([A-Za-z0-9+/]{20,})(["'])/gi, replacement: '$1********$3' },
+                    
+                    // JWT tokens
+                    { pattern: /eyJ[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+\.[A-Za-z0-9+/=]+/g, replacement: 'eyJ********' },
+                    
+                    // Hash patterns
+                    { pattern: /[a-f0-9]{32}/g, replacement: '********' },
+                    { pattern: /[a-f0-9]{40}/g, replacement: '********' },
+                    { pattern: /[a-f0-9]{64}/g, replacement: '********' },
+                ];
+
+                let maskedContent = content;
+                sensitivePatterns.forEach(({ pattern, replacement }) => {
+                    maskedContent = maskedContent.replace(pattern, replacement);
+                });
+
+                return maskedContent;
             }
 
             setupEventListeners() {
@@ -767,7 +936,7 @@
 
                 require(['vs/editor/editor.main'], () => {
                     this.editor = monaco.editor.create(document.getElementById('editor'), {
-                        value: '// Welcome to Code Studio Pro\n// Upload files to get started!\n// Supports all programming languages with auto-completion',
+                        value: '// Welcome to Code Studio Pro\n// Upload files to get started!\n// 🔒 Security: Sensitive data automatically masked with asterisks\n// Supports all programming languages with auto-completion',
                         language: 'javascript',
                         theme: 'vs-dark',
                         automaticLayout: true,
@@ -961,7 +1130,15 @@
             }
 
             executeTerminalCommand(command) {
-                this.addTerminalOutput(`${document.getElementById('terminalPrompt').textContent} ${command}`, 'command-success');
+                // Mask sensitive data in terminal commands
+                const maskedCommand = this.maskSensitiveData(command);
+                this.addTerminalOutput(`${document.getElementById('terminalPrompt').textContent} ${maskedCommand}`, 'command-success');
+
+                // Check for sensitive data in command
+                const sensitiveFindings = this.detectSensitiveData(command);
+                if (sensitiveFindings.length > 0) {
+                    this.addTerminalOutput('🔒 Security Alert: Sensitive data detected and masked', 'command-security');
+                }
 
                 // Language-specific command execution
                 if (this.currentLanguage === 'node') {
@@ -989,7 +1166,8 @@
                         this.addTerminalOutput('🚀 Starting development server...', 'command-info');
                         this.addTerminalOutput('Server running on http://localhost:3000', 'command-success');
                     } else if (command.includes('console.log')) {
-                        const result = eval(command);
+                        const maskedCommand = this.maskSensitiveData(command);
+                        const result = eval(maskedCommand);
                         this.addTerminalOutput(result || 'undefined', 'command-success');
                     } else {
                         this.addTerminalOutput('Node.js command executed', 'command-success');
@@ -1007,7 +1185,8 @@
                         this.addTerminalOutput('✅ Package installed successfully', 'command-success');
                     }, 1000);
                 } else if (command.includes('print(')) {
-                    const match = command.match(/print$$(.*)$$/);
+                    const maskedCommand = this.maskSensitiveData(command);
+                    const match = maskedCommand.match(/print\((.*)$/);
                     if (match) {
                         this.addTerminalOutput(match[1].replace(/['"]/g, ''), 'command-success');
                     }
@@ -1033,9 +1212,10 @@
             }
 
             executeSQLCommand(command) {
-                // Simulate SQL execution
+                // Simulate SQL execution with security check
+                const maskedCommand = this.maskSensitiveData(command);
                 const sqlKeywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP'];
-                const isSQL = sqlKeywords.some(keyword => command.toUpperCase().includes(keyword));
+                const isSQL = sqlKeywords.some(keyword => maskedCommand.toUpperCase().includes(keyword));
                 
                 if (isSQL) {
                     this.addTerminalOutput('🗄️ Executing SQL query...', 'command-info');
@@ -1058,9 +1238,20 @@
 - info: Show system information
 - files: Show file details
 - langs: Show language-specific help
+- security: Show security information
 - create-react-app: Create React application
 - vue create: Create Vue.js application
 - ng new: Create Angular application`, 'command-info');
+                        break;
+                    case 'security':
+                        this.addTerminalOutput(`🔒 Security Features:
+- Automatic detection of passwords, API keys, tokens
+- Sensitive data masked with asterisks (********)
+- Real-time security alerts
+- Protected patterns: passwords, api_keys, tokens, secrets, hashes
+- Environment variable protection
+- JWT token masking
+- Database credential protection`, 'command-security');
                         break;
                     case 'langs':
                         this.addTerminalOutput(`Language-specific commands:
@@ -1084,6 +1275,7 @@ Use language selector to switch modes`, 'command-info');
                             <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
                             <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
                             <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
+                            <div class="command-security">🔒 Security: Sensitive data automatically masked with asterisks</div>
                             <div></div>
                         `;
                         return;
@@ -1097,7 +1289,8 @@ Use language selector to switch modes`, 'command-info');
 - Current File: ${this.currentFile || 'None'}
 - Storage Used: ${this.getStorageUsage()} bytes
 - Font Size: ${this.fontSize}px
-- Language Mode: ${this.currentLanguage.toUpperCase()}`, 'command-info');
+- Language Mode: ${this.currentLanguage.toUpperCase()}
+- Security: Active`, 'command-info');
                         break;
                     case 'create-react-app':
                         this.addTerminalOutput('⚛️ Creating React application...', 'command-info');
@@ -1136,17 +1329,30 @@ Use language selector to switch modes`, 'command-info');
                 for (let file of fileList) {
                     try {
                         const content = await this.readFile(file);
+                        
+                        // Security check for sensitive data
+                        const sensitiveFindings = this.detectSensitiveData(content);
+                        const hasSensitiveData = sensitiveFindings.length > 0;
+                        
                         const fileData = {
                             name: file.name,
-                            content: content,
+                            content: content, // Store original content
+                            maskedContent: this.maskSensitiveData(content), // Store masked version
                             type: this.getFileType(file.name),
                             size: file.size,
-                            lastModified: Date.now()
+                            lastModified: Date.now(),
+                            hasSensitiveData: hasSensitiveData,
+                            sensitiveFindings: sensitiveFindings
                         };
                         
                         this.files.set(file.name, fileData);
                         this.saveToStorage();
                         this.updateFileList();
+                        
+                        // Show security alert if sensitive data found
+                        if (hasSensitiveData) {
+                            this.showSecurityAlert(file.name, sensitiveFindings.length);
+                        }
                         
                         // Show file analysis popup
                         this.showFileAnalysis(fileData);
@@ -1161,6 +1367,11 @@ Use language selector to switch modes`, 'command-info');
                 }
             }
 
+            showSecurityAlert(filename, count) {
+                this.showNotification(`🔒 Security Alert: ${count} sensitive data pattern(s) detected in ${filename} and masked`, 'security');
+                this.addTerminalOutput(`🔒 Security Alert: Sensitive data detected in ${filename} - automatically masked`, 'command-security');
+            }
+
             showFileAnalysis(fileData) {
                 const analysis = this.analyzeFile(fileData);
                 const popupContent = document.getElementById('popupContent');
@@ -1170,6 +1381,12 @@ Use language selector to switch modes`, 'command-info');
                     <p><strong>Language:</strong> ${analysis.language}</p>
                     <p><strong>File Size:</strong> ${this.formatFileSize(fileData.size)}</p>
                     <p><strong>Lines of Code:</strong> ${fileData.content.split('\n').length}</p>
+                    ${fileData.hasSensitiveData ? `
+                        <p><strong>🔒 Security Status:</strong> <span class="tech-tag security-tag">Sensitive Data Detected</span></p>
+                        <p><strong>Sensitive Patterns:</strong> ${fileData.sensitiveFindings.length} found and masked</p>
+                    ` : `
+                        <p><strong>🔒 Security Status:</strong> <span class="tech-tag">Safe</span></p>
+                    `}
                     ${analysis.frameworks.length > 0 ? `
                         <p><strong>Frameworks/Technologies:</strong></p>
                         <div>
@@ -1338,10 +1555,17 @@ Use language selector to switch modes`, 'command-info');
                     if (this.currentFile === filename) {
                         fileItem.classList.add('active');
                     }
+                    if (fileData.hasSensitiveData) {
+                        fileItem.classList.add('sensitive');
+                    }
+
+                    const securityIndicator = fileData.hasSensitiveData ? 
+                        '<span class="security-indicator">🔒 SENSITIVE</span>' : 
+                        '<span class="security-indicator safe">🔓 SAFE</span>';
 
                     fileItem.innerHTML = `
                         <div class="file-info">
-                            <div class="file-name">${filename}</div>
+                            <div class="file-name">${filename} ${securityIndicator}</div>
                             <div class="file-meta">${this.getLanguageName(fileData.type)} • ${this.formatFileSize(fileData.size)}</div>
                         </div>
                         <span class="file-delete" onclick="codeStudio.deleteFile('${filename}')">&times;</span>
@@ -1364,8 +1588,18 @@ Use language selector to switch modes`, 'command-info');
                 const fileData = this.files.get(filename);
                 
                 if (this.editor) {
-                    this.editor.setValue(fileData.content);
+                    // Display masked content in editor for security
+                    this.editor.setValue(fileData.maskedContent);
                     monaco.editor.setModelLanguage(this.editor.getModel(), fileData.type);
+                }
+
+                // Show security alert if file contains sensitive data
+                if (fileData.hasSensitiveData) {
+                    const securityAlert = document.getElementById('securityAlert');
+                    securityAlert.innerHTML = `🔒 Security Alert: This file contains ${fileData.sensitiveFindings.length} sensitive data pattern(s) that have been masked with asterisks for security.`;
+                    securityAlert.style.display = 'block';
+                } else {
+                    document.getElementById('securityAlert').style.display = 'none';
                 }
 
                 this.updateFileList();
@@ -1380,6 +1614,7 @@ Use language selector to switch modes`, 'command-info');
                     if (this.editor) {
                         this.editor.setValue('// Select a file to edit');
                     }
+                    document.getElementById('securityAlert').style.display = 'none';
                 }
 
                 this.saveToStorage();
@@ -1393,12 +1628,27 @@ Use language selector to switch modes`, 'command-info');
 
                 const content = this.editor.getValue();
                 const fileData = this.files.get(this.currentFile);
+                
+                // Update both original and masked content
                 fileData.content = content;
+                fileData.maskedContent = this.maskSensitiveData(content);
                 fileData.lastModified = Date.now();
+                
+                // Re-check for sensitive data
+                const sensitiveFindings = this.detectSensitiveData(content);
+                fileData.hasSensitiveData = sensitiveFindings.length > 0;
+                fileData.sensitiveFindings = sensitiveFindings;
 
                 this.files.set(this.currentFile, fileData);
                 this.saveToStorage();
                 this.showNotification('File saved successfully');
+                
+                // Update security alert if needed
+                if (fileData.hasSensitiveData) {
+                    const securityAlert = document.getElementById('securityAlert');
+                    securityAlert.innerHTML = `🔒 Security Alert: This file contains ${fileData.sensitiveFindings.length} sensitive data pattern(s) that have been masked with asterisks for security.`;
+                    securityAlert.style.display = 'block';
+                }
             }
 
             updateRunButton() {
@@ -1426,17 +1676,25 @@ Use language selector to switch modes`, 'command-info');
             }
 
             runHTMLFile(fileData) {
-                // Create a new window/tab for HTML preview
+                // Use original content for execution, not masked version
                 const newWindow = window.open('', '_blank');
                 newWindow.document.write(fileData.content);
                 newWindow.document.close();
                 this.showNotification('HTML file opened in new tab');
                 this.addTerminalOutput('🌐 HTML file executed in new tab', 'command-success');
+                
+                if (fileData.hasSensitiveData) {
+                    this.addTerminalOutput('⚠️ Warning: Executed file contains sensitive data', 'command-warning');
+                }
             }
 
             runJavaScriptFile(fileData) {
                 try {
-                    // Create a safe execution context
+                    // Use original content for execution, but warn about sensitive data
+                    if (fileData.hasSensitiveData) {
+                        this.addTerminalOutput('⚠️ Warning: Executing file with sensitive data', 'command-warning');
+                    }
+                    
                     const result = eval(fileData.content);
                     this.showNotification('JavaScript executed successfully');
                     this.addTerminalOutput(`JS Output: ${result || 'undefined'}`, 'command-success');
@@ -1463,6 +1721,8 @@ Use language selector to switch modes`, 'command-info');
                         this.editor.setValue('// All data cleared\n// Upload new files to get started!');
                     }
                     
+                    document.getElementById('securityAlert').style.display = 'none';
+                    
                     this.saveToStorage();
                     this.updateFileList();
                     this.updateRunButton();
@@ -1473,6 +1733,7 @@ Use language selector to switch modes`, 'command-info');
                         <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
                         <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
                         <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
+                        <div class="command-security">🔒 Security: Sensitive data automatically masked with asterisks</div>
                         <div></div>
                     `;
                     
