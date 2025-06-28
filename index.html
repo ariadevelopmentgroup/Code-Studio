@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeStudio Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .header {
+            background: #2d2d30;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 60px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007acc;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .run-btn {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .run-btn:hover {
+            background: #005a9e;
+        }
+
+        .run-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .split-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-panel {
+            width: 50%;
+            background: #252526;
+            border-right: 1px solid #3e3e42;
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .right-panel {
+            width: 50%;
+            background: #1e1e1e;
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .resize-handle {
+            width: 4px;
+            background: #3e3e42;
+            cursor: col-resize;
+            position: relative;
+            z-index: 10;
+        }
+
+        .resize-handle:hover {
+            background: #007acc;
+        }
+
+        /* File Explorer */
+        .file-explorer {
+            background: #2d2d30;
+            border-bottom: 1px solid #3e3e42;
+            padding: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .file-explorer h3 {
+            margin-bottom: 0.5rem;
+            color: #cccccc;
+            font-size: 0.9rem;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .file-item {
+            padding: 0.25rem 0.5rem;
+            background: #37373d;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item:hover {
+            background: #464647;
+        }
+
+        .file-item.active {
+            background: #007acc;
+        }
+
+        .file-delete {
+            color: #f48771;
+            cursor: pointer;
+            padding: 0.1rem 0.3rem;
+            border-radius: 2px;
+        }
+
+        .file-delete:hover {
+            background: #f48771;
+            color: white;
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            flex: 1;
+            border: 2px dashed #3e3e42;
+            margin: 1rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #007acc;
+            background: rgba(0, 122, 204, 0.1);
+        }
+
+        .drop-zone-content {
+            pointer-events: none;
+        }
+
+        .drop-zone h3 {
+            margin-bottom: 1rem;
+            color: #cccccc;
+        }
+
+        .drop-zone p {
+            color: #969696;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .browse-btn {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            pointer-events: all;
+        }
+
+        /* Code Editor */
+        .editor-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #editor {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Preview Panel */
+        .preview-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            background: #2d2d30;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .preview-content {
+            flex: 1;
+            background: white;
+            position: relative;
+        }
+
+        #preview-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+
+        .preview-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #969696;
+            background: #1e1e1e;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2d2d30;
+            padding: 1rem 2rem;
+            border-top: 1px solid #3e3e42;
+            text-align: center;
+            color: #969696;
+            font-size: 0.8rem;
+        }
+
+        /* Save Notification */
+        .save-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4caf50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .save-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Error Panel */
+        .error-panel {
+            background: #f48771;
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0.5rem 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+                min-height: auto;
+            }
+
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .split-container {
+                flex-direction: column;
+            }
+
+            .left-panel, .right-panel {
+                width: 100%;
+                height: 50%;
+            }
+
+            .resize-handle {
+                width: 100%;
+                height: 4px;
+                cursor: row-resize;
+            }
+
+            .file-explorer {
+                max-height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.5rem;
+            }
+
+            .footer {
+                padding: 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .drop-zone {
+                margin: 0.5rem;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007acc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Save Notification -->
+    <div id="saveNotification" class="save-notification">
+        <span id="saveText">File saved successfully!</span>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">CodeStudio Pro</div>
+        <div class="header-controls">
+            <button id="runBtn" class="run-btn" disabled>
+                <span id="runBtnText">Run</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="split-container">
+            <!-- Left Panel -->
+            <div class="left-panel">
+                <!-- File Explorer -->
+                <div class="file-explorer">
+                    <h3>Files</h3>
+                    <div id="fileList" class="file-list">
+                        <!-- Files will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Drop Zone -->
+                <div id="dropZone" class="drop-zone">
+                    <div class="drop-zone-content">
+                        <h3>📁 Drag & Drop Files</h3>
+                        <p>Drop your files here or click to browse</p>
+                        <button id="browseBtn" class="browse-btn">Browse Files</button>
+                        <input type="file" id="fileInput" class="file-input" multiple accept="*/*">
+                    </div>
+                </div>
+
+                <!-- Code Editor -->
+                <div class="editor-container">
+                    <div id="errorPanel" class="error-panel"></div>
+                    <div id="editor"></div>
+                </div>
+            </div>
+
+            <!-- Resize Handle -->
+            <div id="resizeHandle" class="resize-handle"></div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <div class="preview-header">
+                    <h3>Preview</h3>
+                </div>
+                <div class="preview-content">
+                    <div id="previewPlaceholder" class="preview-placeholder">
+                        <p>Select an HTML file and click "Run" to preview</p>
+                    </div>
+                    <iframe id="previewFrame" style="display: none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        © Copyright 2025 | All rights reserved. | Designed in Armenia by ADG.
+    </footer>
+
+    <!-- Monaco Editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+    
+    <script>
+        class CodeStudioPro {
+            constructor() {
+                this.files = new Map();
+                this.currentFile = null;
+                this.editor = null;
+                this.autoSaveTimeout = null;
+                this.storageKey = 'codestudio_files';
+                
+                this.init();
+            }
+
+            init() {
+                this.loadFromStorage();
+                this.setupEventListeners();
+                this.setupEditor();
+                this.setupResizer();
+                this.updateFileList();
+                
+                // Clear storage when tab closes
+                window.addEventListener('beforeunload', () => {
+                    this.clearStorage();
+                });
+            }
+
+            setupEventListeners() {
+                const dropZone = document.getElementById('dropZone');
+                const fileInput = document.getElementById('fileInput');
+                const browseBtn = document.getElementById('browseBtn');
+                const runBtn = document.getElementById('runBtn');
+
+                // Drag and drop
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('drag-over');
+                });
+
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('drag-over');
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('drag-over');
+                    this.handleFiles(e.dataTransfer.files);
+                });
+
+                // File input
+                browseBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener('change', (e) => {
+                    this.handleFiles(e.target.files);
+                });
+
+                // Run button
+                runBtn.addEventListener('click', () => {
+                    this.runCurrentFile();
+                });
+            }
+
+            setupEditor() {
+                require.config({ 
+                    paths: { 
+                        'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' 
+                    } 
+                });
+
+                require(['vs/editor/editor.main'], () => {
+                    this.editor = monaco.editor.create(document.getElementById('editor'), {
+                        value: '// Welcome to CodeStudio Pro\n// Drag and drop files to get started!',
+                        language: 'javascript',
+                        theme: 'vs-dark',
+                        automaticLayout: true,
+                        fontSize: 14,
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        wordWrap: 'on',
+                        suggestOnTriggerCharacters: true,
+                        quickSuggestions: true,
+                        autoClosingBrackets: 'always',
+                        autoClosingQuotes: 'always',
+                        autoIndent: 'full'
+                    });
+
+                    // Auto-save on content change
+                    this.editor.onDidChangeModelContent(() => {
+                        if (this.currentFile) {
+                            clearTimeout(this.autoSaveTimeout);
+                            this.autoSaveTimeout = setTimeout(() => {
+                                this.saveCurrentFile();
+                            }, 1000);
+                        }
+                    });
+
+                    // Error detection
+                    this.editor.onDidChangeModelContent(() => {
+                        this.checkForErrors();
+                    });
+                });
+            }
+
+            setupResizer() {
+                const resizeHandle = document.getElementById('resizeHandle');
+                const leftPanel = document.querySelector('.left-panel');
+                const rightPanel = document.querySelector('.right-panel');
+                let isResizing = false;
+
+                resizeHandle.addEventListener('mousedown', (e) => {
+                    isResizing = true;
+                    document.addEventListener('mousemove', handleMouseMove);
+                    document.addEventListener('mouseup', handleMouseUp);
+                    e.preventDefault();
+                });
+
+                function handleMouseMove(e) {
+                    if (!isResizing) return;
+
+                    const container = document.querySelector('.split-container');
+                    const containerRect = container.getBoundingClientRect();
+                    const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+
+                    if (percentage > 20 && percentage < 80) {
+                        leftPanel.style.width = percentage + '%';
+                        rightPanel.style.width = (100 - percentage) + '%';
+                    }
+                }
+
+                function handleMouseUp() {
+                    isResizing = false;
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.removeEventListener('mouseup', handleMouseUp);
+                }
+            }
+
+            async handleFiles(fileList) {
+                for (let file of fileList) {
+                    try {
+                        const content = await this.readFile(file);
+                        const fileData = {
+                            name: file.name,
+                            content: content,
+                            type: this.getFileType(file.name),
+                            lastModified: Date.now()
+                        };
+                        
+                        this.files.set(file.name, fileData);
+                        this.saveToStorage();
+                        this.updateFileList();
+                        
+                        // Auto-select first file
+                        if (this.files.size === 1) {
+                            this.selectFile(file.name);
+                        }
+                    } catch (error) {
+                        this.showError(`Error reading file ${file.name}: ${error.message}`);
+                    }
+                }
+            }
+
+            readFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = (e) => reject(new Error('Failed to read file'));
+                    reader.readAsText(file);
+                });
+            }
+
+            getFileType(filename) {
+                const ext = filename.split('.').pop().toLowerCase();
+                const typeMap = {
+                    'html': 'html',
+                    'htm': 'html',
+                    'css': 'css',
+                    'js': 'javascript',
+                    'jsx': 'javascript',
+                    'ts': 'typescript',
+                    'tsx': 'typescript',
+                    'json': 'json',
+                    'xml': 'xml',
+                    'py': 'python',
+                    'java': 'java',
+                    'cpp': 'cpp',
+                    'c': 'c',
+                    'php': 'php',
+                    'rb': 'ruby',
+                    'go': 'go',
+                    'rs': 'rust',
+                    'sql': 'sql',
+                    'md': 'markdown',
+                    'txt': 'plaintext'
+                };
+                return typeMap[ext] || 'plaintext';
+            }
+
+            updateFileList() {
+                const fileList = document.getElementById('fileList');
+                fileList.innerHTML = '';
+
+                if (this.files.size === 0) {
+                    fileList.innerHTML = '<div style="color: #969696; font-style: italic;">No files uploaded</div>';
+                    return;
+                }
+
+                this.files.forEach((fileData, filename) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    if (this.currentFile === filename) {
+                        fileItem.classList.add('active');
+                    }
+
+                    fileItem.innerHTML = `
+                        <span>${filename}</span>
+                        <span class="file-delete" onclick="codeStudio.deleteFile('${filename}')">&times;</span>
+                    `;
+
+                    fileItem.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('file-delete')) {
+                            this.selectFile(filename);
+                        }
+                    });
+
+                    fileList.appendChild(fileItem);
+                });
+            }
+
+            selectFile(filename) {
+                if (!this.files.has(filename)) return;
+
+                this.currentFile = filename;
+                const fileData = this.files.get(filename);
+                
+                if (this.editor) {
+                    this.editor.setValue(fileData.content);
+                    monaco.editor.setModelLanguage(this.editor.getModel(), fileData.type);
+                }
+
+                this.updateFileList();
+                this.updateRunButton();
+            }
+
+            deleteFile(filename) {
+                this.files.delete(filename);
+                
+                if (this.currentFile === filename) {
+                    this.currentFile = null;
+                    if (this.editor) {
+                        this.editor.setValue('// Select a file to edit');
+                    }
+                }
+
+                this.saveToStorage();
+                this.updateFileList();
+                this.updateRunButton();
+            }
+
+            saveCurrentFile() {
+                if (!this.currentFile || !this.editor) return;
+
+                const content = this.editor.getValue();
+                const fileData = this.files.get(this.currentFile);
+                fileData.content = content;
+                fileData.lastModified = Date.now();
+
+                this.files.set(this.currentFile, fileData);
+                this.saveToStorage();
+                this.showSaveNotification();
+            }
+
+            updateRunButton() {
+                const runBtn = document.getElementById('runBtn');
+                const canRun = this.currentFile && 
+                              this.files.has(this.currentFile) && 
+                              this.files.get(this.currentFile).type === 'html';
+                
+                runBtn.disabled = !canRun;
+            }
+
+            runCurrentFile() {
+                if (!this.currentFile || !this.files.has(this.currentFile)) return;
+
+                const fileData = this.files.get(this.currentFile);
+                if (fileData.type !== 'html') {
+                    this.showError('Only HTML files can be previewed');
+                    return;
+                }
+
+                this.saveCurrentFile(); // Save before running
+                
+                const previewFrame = document.getElementById('previewFrame');
+                const placeholder = document.getElementById('previewPlaceholder');
+                
+                // Create blob URL for the HTML content
+                const blob = new Blob([fileData.content], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                
+                previewFrame.src = url;
+                previewFrame.style.display = 'block';
+                placeholder.style.display = 'none';
+
+                // Clean up previous blob URL
+                previewFrame.onload = () => {
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                };
+            }
+
+            checkForErrors() {
+                if (!this.currentFile || !this.editor) return;
+
+                const content = this.editor.getValue();
+                const fileData = this.files.get(this.currentFile);
+                const errorPanel = document.getElementById('errorPanel');
+
+                // Basic syntax checking for HTML
+                if (fileData.type === 'html') {
+                    const errors = this.validateHTML(content);
+                    if (errors.length > 0) {
+                        errorPanel.innerHTML = errors.join('<br>');
+                        errorPanel.style.display = 'block';
+                    } else {
+                        errorPanel.style.display = 'none';
+                    }
+                } else {
+                    errorPanel.style.display = 'none';
+                }
+            }
+
+            validateHTML(content) {
+                const errors = [];
+                const lines = content.split('\n');
+                
+                // Check for unclosed tags
+                const tagStack = [];
+                const selfClosingTags = ['img', 'br', 'hr', 'input', 'meta', 'link', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr'];
+                
+                lines.forEach((line, index) => {
+                    const tagRegex = /<\/?([a-zA-Z][a-zA-Z0-9]*)[^>]*>/g;
+                    let match;
+                    
+                    while ((match = tagRegex.exec(line)) !== null) {
+                        const tagName = match[1].toLowerCase();
+                        const isClosing = match[0].startsWith('</');
+                        const isSelfClosing = selfClosingTags.includes(tagName) || match[0].endsWith('/>');
+                        
+                        if (isClosing) {
+                            if (tagStack.length === 0 || tagStack[tagStack.length - 1].tag !== tagName) {
+                                errors.push(`Line ${index + 1}: Unexpected closing tag </${tagName}>`);
+                            } else {
+                                tagStack.pop();
+                            }
+                        } else if (!isSelfClosing) {
+                            tagStack.push({ tag: tagName, line: index + 1 });
+                        }
+                    }
+                });
+                
+                // Check for unclosed tags
+                tagStack.forEach(tag => {
+                    errors.push(`Line ${tag.line}: Unclosed tag <${tag.tag}>`);
+                });
+                
+                return errors;
+            }
+
+            showSaveNotification() {
+                const notification = document.getElementById('saveNotification');
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+
+            showError(message) {
+                const errorPanel = document.getElementById('errorPanel');
+                errorPanel.innerHTML = message;
+                errorPanel.style.display = 'block';
+                
+                setTimeout(() => {
+                    errorPanel.style.display = 'none';
+                }, 5000);
+            }
+
+            saveToStorage() {
+                try {
+                    const data = {
+                        files: Array.from(this.files.entries()),
+                        currentFile: this.currentFile,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem(this.storageKey, JSON.stringify(data));
+                } catch (error) {
+                    console.warn('Failed to save to localStorage:', error);
+                }
+            }
+
+            loadFromStorage() {
+                try {
+                    const data = localStorage.getItem(this.storageKey);
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        this.files = new Map(parsed.files);
+                        this.currentFile = parsed.currentFile;
+                    }
+                } catch (error) {
+                    console.warn('Failed to load from localStorage:', error);
+                }
+            }
+
+            clearStorage() {
+                localStorage.removeItem(this.storageKey);
+            }
+
+            // Calculate approximate storage usage
+            getStorageUsage() {
+                let totalSize = 0;
+                this.files.forEach(file => {
+                    totalSize += new Blob([file.content]).size;
+                });
+                return totalSize;
+            }
+        }
+
+        // Initialize the application
+        const codeStudio = new CodeStudioPro();
+
+        // Make it globally accessible for event handlers
+        window.codeStudio = codeStudio;
+
+        // Storage usage monitoring
+        setInterval(() => {
+            const usage = codeStudio.getStorageUsage();
+            const maxStorage = 5 * 1024 * 1024; // 5MB typical localStorage limit
+            
+            if (usage > maxStorage * 0.8) {
+                console.warn('Approaching storage limit:', usage, 'bytes');
+            }
+        }, 10000);
+    </script>
+</body>
+</html>
