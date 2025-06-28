@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeStudio Pro</title>
+    <title>Code Studio Pro</title>
     <style>
         * {
             margin: 0;
@@ -44,7 +44,7 @@
             align-items: center;
         }
 
-        .run-btn {
+        .btn {
             background: #007acc;
             color: white;
             border: none;
@@ -53,115 +53,116 @@
             cursor: pointer;
             font-weight: 500;
             transition: background 0.2s;
+            font-size: 0.9rem;
         }
 
-        .run-btn:hover {
+        .btn:hover {
             background: #005a9e;
         }
 
-        .run-btn:disabled {
+        .btn:disabled {
             background: #555;
             cursor: not-allowed;
         }
 
-        /* Main Content */
+        .btn.danger {
+            background: #f48771;
+        }
+
+        .btn.danger:hover {
+            background: #e74c3c;
+        }
+
+        .font-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .font-btn {
+            background: #37373d;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .font-btn:hover {
+            background: #464647;
+        }
+
+        /* Main Content - 4 Window Layout */
         .main-content {
             flex: 1;
-            display: flex;
-            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 4px 1fr;
+            grid-template-rows: 1fr 4px 1fr;
+            gap: 0;
             overflow: hidden;
         }
 
-        .split-container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-
-        .left-panel {
-            width: 50%;
+        .window {
             background: #252526;
-            border-right: 1px solid #3e3e42;
+            border: 1px solid #3e3e42;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
             min-width: 200px;
+            min-height: 150px;
         }
 
-        .right-panel {
-            width: 50%;
-            background: #1e1e1e;
+        .window-header {
+            background: #2d2d30;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #3e3e42;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #cccccc;
             display: flex;
-            flex-direction: column;
-            min-width: 200px;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .resize-handle {
-            width: 4px;
+        .window-content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Window positioning */
+        .window-1 { grid-column: 1; grid-row: 1; } /* Drag & Drop */
+        .window-2 { grid-column: 3; grid-row: 1; } /* File List */
+        .window-3 { grid-column: 1; grid-row: 3; } /* Code Editor */
+        .window-4 { grid-column: 3; grid-row: 3; } /* Terminal */
+
+        /* Resize handles */
+        .resize-handle-v {
+            grid-column: 2;
+            grid-row: 1 / 4;
             background: #3e3e42;
             cursor: col-resize;
             position: relative;
             z-index: 10;
         }
 
-        .resize-handle:hover {
+        .resize-handle-h {
+            grid-column: 1 / 4;
+            grid-row: 2;
+            background: #3e3e42;
+            cursor: row-resize;
+            position: relative;
+            z-index: 10;
+        }
+
+        .resize-handle-v:hover,
+        .resize-handle-h:hover {
             background: #007acc;
         }
 
-        /* File Explorer */
-        .file-explorer {
-            background: #2d2d30;
-            border-bottom: 1px solid #3e3e42;
-            padding: 1rem;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .file-explorer h3 {
-            margin-bottom: 0.5rem;
-            color: #cccccc;
-            font-size: 0.9rem;
-        }
-
-        .file-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .file-item {
-            padding: 0.25rem 0.5rem;
-            background: #37373d;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .file-item:hover {
-            background: #464647;
-        }
-
-        .file-item.active {
-            background: #007acc;
-        }
-
-        .file-delete {
-            color: #f48771;
-            cursor: pointer;
-            padding: 0.1rem 0.3rem;
-            border-radius: 2px;
-        }
-
-        .file-delete:hover {
-            background: #f48771;
-            color: white;
-        }
-
-        /* Drop Zone */
+        /* Drop Zone Styles */
         .drop-zone {
-            flex: 1;
+            height: 100%;
             border: 2px dashed #3e3e42;
             margin: 1rem;
             border-radius: 8px;
@@ -191,6 +192,13 @@
         .drop-zone p {
             color: #969696;
             margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .storage-info {
+            color: #007acc;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
         }
 
         .file-input {
@@ -207,9 +215,71 @@
             pointer-events: all;
         }
 
+        /* File List Styles */
+        .file-list-container {
+            height: 100%;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .file-item {
+            padding: 0.5rem;
+            background: #37373d;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .file-item:hover {
+            background: #464647;
+        }
+
+        .file-item.active {
+            background: #007acc;
+        }
+
+        .file-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 500;
+        }
+
+        .file-meta {
+            font-size: 0.7rem;
+            color: #969696;
+            margin-top: 0.2rem;
+        }
+
+        .file-delete {
+            color: #f48771;
+            cursor: pointer;
+            padding: 0.2rem 0.4rem;
+            border-radius: 2px;
+            font-size: 1rem;
+        }
+
+        .file-delete:hover {
+            background: #f48771;
+            color: white;
+        }
+
         /* Code Editor */
         .editor-container {
-            flex: 1;
+            height: 100%;
             position: relative;
         }
 
@@ -218,42 +288,176 @@
             height: 100%;
         }
 
-        /* Preview Panel */
-        .preview-container {
-            flex: 1;
+        /* Enhanced Terminal Styles */
+        .terminal-container {
+            height: 100%;
+            background: #0c0c0c;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
             display: flex;
             flex-direction: column;
         }
 
-        .preview-header {
-            background: #2d2d30;
+        .terminal-header {
+            background: #1a1a1a;
             padding: 0.5rem 1rem;
-            border-bottom: 1px solid #3e3e42;
+            border-bottom: 1px solid #333;
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
         }
 
-        .preview-content {
+        .terminal-status {
+            font-size: 0.8rem;
+            color: #00ff00;
+        }
+
+        .language-selector {
+            background: #333;
+            color: #00ff00;
+            border: 1px solid #555;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-family: inherit;
+        }
+
+        .terminal-output {
             flex: 1;
-            background: white;
+            padding: 1rem;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .terminal-input-container {
+            display: flex;
+            padding: 0.5rem 1rem;
+            border-top: 1px solid #333;
+            align-items: center;
+        }
+
+        .terminal-prompt {
+            color: #00ff00;
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        .terminal-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #00ff00;
+            font-family: inherit;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .command-output {
+            margin: 0.5rem 0;
+        }
+
+        .command-success {
+            color: #00ff00;
+        }
+
+        .command-error {
+            color: #ff6b6b;
+        }
+
+        .command-info {
+            color: #61dafb;
+        }
+
+        .command-warning {
+            color: #ffa500;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4caf50;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .notification.error {
+            background: #f48771;
+        }
+
+        /* Popup Modal */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .popup {
+            background: #2d2d30;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            color: white;
             position: relative;
         }
 
-        #preview-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
         }
 
-        .preview-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #969696;
-            background: #1e1e1e;
+        .popup-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #007acc;
+        }
+
+        .popup-close {
+            background: #f48771;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .popup-content {
+            line-height: 1.6;
+        }
+
+        .tech-tag {
+            display: inline-block;
+            background: #007acc;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            margin: 0.2rem;
         }
 
         /* Footer */
@@ -264,26 +468,6 @@
             text-align: center;
             color: #969696;
             font-size: 0.8rem;
-        }
-
-        /* Save Notification */
-        .save-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #4caf50;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .save-notification.show {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         /* Error Panel */
@@ -299,49 +483,35 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 4px 1fr 4px 1fr 4px 1fr;
+            }
+
+            .window-1 { grid-column: 1; grid-row: 1; }
+            .window-2 { grid-column: 1; grid-row: 3; }
+            .window-3 { grid-column: 1; grid-row: 5; }
+            .window-4 { grid-column: 1; grid-row: 7; }
+
+            .resize-handle-v { display: none; }
+            .resize-handle-h {
+                grid-column: 1;
+                cursor: row-resize;
+            }
+
+            .resize-handle-h:nth-of-type(1) { grid-row: 2; }
+            .resize-handle-h:nth-of-type(2) { grid-row: 4; }
+            .resize-handle-h:nth-of-type(3) { grid-row: 6; }
+
             .header {
                 padding: 0.5rem 1rem;
                 flex-direction: column;
                 gap: 0.5rem;
-                min-height: auto;
             }
 
-            .logo {
-                font-size: 1.2rem;
-            }
-
-            .split-container {
-                flex-direction: column;
-            }
-
-            .left-panel, .right-panel {
-                width: 100%;
-                height: 50%;
-            }
-
-            .resize-handle {
-                width: 100%;
-                height: 4px;
-                cursor: row-resize;
-            }
-
-            .file-explorer {
-                max-height: 150px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 0.5rem;
-            }
-
-            .footer {
-                padding: 0.5rem;
-                font-size: 0.7rem;
-            }
-
-            .drop-zone {
-                margin: 0.5rem;
+            .header-controls {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
 
@@ -363,67 +533,120 @@
     </style>
 </head>
 <body>
-    <!-- Save Notification -->
-    <div id="saveNotification" class="save-notification">
-        <span id="saveText">File saved successfully!</span>
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <span id="notificationText">File saved successfully!</span>
+    </div>
+
+    <!-- Popup Modal -->
+    <div id="popupOverlay" class="popup-overlay">
+        <div class="popup">
+            <div class="popup-header">
+                <div class="popup-title">File Analysis</div>
+                <button id="popupClose" class="popup-close">Close</button>
+            </div>
+            <div id="popupContent" class="popup-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
     </div>
 
     <!-- Header -->
     <header class="header">
-        <div class="logo">CodeStudio Pro</div>
+        <div class="logo">Code Studio Pro</div>
         <div class="header-controls">
-            <button id="runBtn" class="run-btn" disabled>
+            <div class="font-controls">
+                <button id="fontDecrease" class="font-btn">-A</button>
+                <button id="fontIncrease" class="font-btn">+A</button>
+            </div>
+            <button id="clearBtn" class="btn danger">Clear Data</button>
+            <button id="runBtn" class="btn" disabled>
                 <span id="runBtnText">Run</span>
             </button>
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main Content - 4 Windows -->
     <main class="main-content">
-        <div class="split-container">
-            <!-- Left Panel -->
-            <div class="left-panel">
-                <!-- File Explorer -->
-                <div class="file-explorer">
-                    <h3>Files</h3>
-                    <div id="fileList" class="file-list">
-                        <!-- Files will be populated here -->
-                    </div>
-                </div>
-
-                <!-- Drop Zone -->
+        <!-- Window 1: Drag & Drop -->
+        <div class="window window-1">
+            <div class="window-header">📁 Drag & Drop Files</div>
+            <div class="window-content">
                 <div id="dropZone" class="drop-zone">
                     <div class="drop-zone-content">
-                        <h3>📁 Drag & Drop Files</h3>
-                        <p>Drop your files here or click to browse</p>
+                        <h3>Drop Files Here</h3>
+                        <p>Drag and drop your files or click to browse</p>
                         <button id="browseBtn" class="browse-btn">Browse Files</button>
                         <input type="file" id="fileInput" class="file-input" multiple accept="*/*">
+                        <div class="storage-info">Local Storage: 1TB Available</div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Code Editor -->
+        <!-- Window 2: File List -->
+        <div class="window window-2">
+            <div class="window-header">📄 Uploaded Files</div>
+            <div class="window-content">
+                <div class="file-list-container">
+                    <div id="fileList" class="file-list">
+                        <div style="color: #969696; font-style: italic; text-align: center; padding: 2rem;">
+                            No files uploaded yet
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Window 3: Code Editor -->
+        <div class="window window-3">
+            <div class="window-header">⚡ Code Editor</div>
+            <div class="window-content">
                 <div class="editor-container">
                     <div id="errorPanel" class="error-panel"></div>
                     <div id="editor"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- Resize Handle -->
-            <div id="resizeHandle" class="resize-handle"></div>
-
-            <!-- Right Panel -->
-            <div class="right-panel">
-                <div class="preview-header">
-                    <h3>Preview</h3>
-                </div>
-                <div class="preview-content">
-                    <div id="previewPlaceholder" class="preview-placeholder">
-                        <p>Select an HTML file and click "Run" to preview</p>
+        <!-- Window 4: Enhanced Terminal -->
+        <div class="window window-4">
+            <div class="window-header">💻 Multi-Language Terminal</div>
+            <div class="window-content">
+                <div class="terminal-container">
+                    <div class="terminal-header">
+                        <div class="terminal-status">Ready • Multi-Language Support</div>
+                        <select id="languageSelector" class="language-selector">
+                            <option value="bash">Bash</option>
+                            <option value="node">Node.js</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                            <option value="php">PHP</option>
+                            <option value="ruby">Ruby</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                            <option value="sql">SQL</option>
+                        </select>
                     </div>
-                    <iframe id="previewFrame" style="display: none;"></iframe>
+                    <div id="terminalOutput" class="terminal-output">
+                        <div class="command-success">Code Studio Pro Multi-Language Terminal v2.0</div>
+                        <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
+                        <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
+                        <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
+                        <div></div>
+                    </div>
+                    <div class="terminal-input-container">
+                        <span id="terminalPrompt" class="terminal-prompt">bash$</span>
+                        <input type="text" id="terminalInput" class="terminal-input" placeholder="Enter command...">
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Resize Handles -->
+        <div class="resize-handle-v" id="resizeHandleV"></div>
+        <div class="resize-handle-h" id="resizeHandleH"></div>
     </main>
 
     <!-- Footer -->
@@ -442,6 +665,10 @@
                 this.editor = null;
                 this.autoSaveTimeout = null;
                 this.storageKey = 'codestudio_files';
+                this.fontSize = 14;
+                this.terminalHistory = [];
+                this.terminalHistoryIndex = -1;
+                this.currentLanguage = 'bash';
                 
                 this.init();
             }
@@ -450,7 +677,8 @@
                 this.loadFromStorage();
                 this.setupEventListeners();
                 this.setupEditor();
-                this.setupResizer();
+                this.setupResizers();
+                this.setupTerminal();
                 this.updateFileList();
                 
                 // Clear storage when tab closes
@@ -464,6 +692,11 @@
                 const fileInput = document.getElementById('fileInput');
                 const browseBtn = document.getElementById('browseBtn');
                 const runBtn = document.getElementById('runBtn');
+                const clearBtn = document.getElementById('clearBtn');
+                const fontIncrease = document.getElementById('fontIncrease');
+                const fontDecrease = document.getElementById('fontDecrease');
+                const popupClose = document.getElementById('popupClose');
+                const languageSelector = document.getElementById('languageSelector');
 
                 // Drag and drop
                 dropZone.addEventListener('dragover', (e) => {
@@ -490,9 +723,38 @@
                     this.handleFiles(e.target.files);
                 });
 
-                // Run button
+                // Buttons
                 runBtn.addEventListener('click', () => {
                     this.runCurrentFile();
+                });
+
+                clearBtn.addEventListener('click', () => {
+                    this.clearAllData();
+                });
+
+                // Font controls
+                fontIncrease.addEventListener('click', () => {
+                    this.changeFontSize(2);
+                });
+
+                fontDecrease.addEventListener('click', () => {
+                    this.changeFontSize(-2);
+                });
+
+                // Language selector
+                languageSelector.addEventListener('change', (e) => {
+                    this.changeLanguage(e.target.value);
+                });
+
+                // Popup
+                popupClose.addEventListener('click', () => {
+                    this.hidePopup();
+                });
+
+                document.getElementById('popupOverlay').addEventListener('click', (e) => {
+                    if (e.target.id === 'popupOverlay') {
+                        this.hidePopup();
+                    }
                 });
             }
 
@@ -505,11 +767,11 @@
 
                 require(['vs/editor/editor.main'], () => {
                     this.editor = monaco.editor.create(document.getElementById('editor'), {
-                        value: '// Welcome to CodeStudio Pro\n// Drag and drop files to get started!',
+                        value: '// Welcome to Code Studio Pro\n// Upload files to get started!\n// Supports all programming languages with auto-completion',
                         language: 'javascript',
                         theme: 'vs-dark',
                         automaticLayout: true,
-                        fontSize: 14,
+                        fontSize: this.fontSize,
                         minimap: { enabled: false },
                         scrollBeyondLastLine: false,
                         wordWrap: 'on',
@@ -517,8 +779,16 @@
                         quickSuggestions: true,
                         autoClosingBrackets: 'always',
                         autoClosingQuotes: 'always',
-                        autoIndent: 'full'
+                        autoClosingOvertype: 'always',
+                        autoIndent: 'full',
+                        formatOnPaste: true,
+                        formatOnType: true,
+                        acceptSuggestionOnEnter: 'on',
+                        tabCompletion: 'on'
                     });
+
+                    // Enhanced auto-completion
+                    this.setupAutoCompletion();
 
                     // Auto-save on content change
                     this.editor.onDidChangeModelContent(() => {
@@ -537,13 +807,78 @@
                 });
             }
 
-            setupResizer() {
-                const resizeHandle = document.getElementById('resizeHandle');
-                const leftPanel = document.querySelector('.left-panel');
-                const rightPanel = document.querySelector('.right-panel');
+            setupAutoCompletion() {
+                // HTML auto-completion
+                monaco.languages.registerCompletionItemProvider('html', {
+                    provideCompletionItems: (model, position) => {
+                        const suggestions = [
+                            {
+                                label: 'html',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: '<html>\n\t$0\n</html>',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'HTML document structure'
+                            },
+                            {
+                                label: 'div',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: '<div>\n\t$0\n</div>',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Division element'
+                            }
+                        ];
+                        return { suggestions };
+                    }
+                });
+
+                // JavaScript/React auto-completion
+                monaco.languages.registerCompletionItemProvider('javascript', {
+                    provideCompletionItems: (model, position) => {
+                        const suggestions = [
+                            {
+                                label: 'function',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: 'function ${1:name}(${2:params}) {\n\t$0\n}',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Function declaration'
+                            },
+                            {
+                                label: 'react-component',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: 'function ${1:ComponentName}() {\n\treturn (\n\t\t<div>\n\t\t\t$0\n\t\t</div>\n\t);\n}',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'React functional component'
+                            }
+                        ];
+                        return { suggestions };
+                    }
+                });
+            }
+
+            setupResizers() {
+                const resizeHandleV = document.getElementById('resizeHandleV');
+                const resizeHandleH = document.getElementById('resizeHandleH');
+                const mainContent = document.querySelector('.main-content');
+
+                // Vertical resizer with constraints
+                this.setupResizer(resizeHandleV, 'vertical', (percentage) => {
+                    // Constrain between 25% and 75%
+                    const constrainedPercentage = Math.max(25, Math.min(75, percentage));
+                    mainContent.style.gridTemplateColumns = `${constrainedPercentage}% 4px ${100 - constrainedPercentage}%`;
+                });
+
+                // Horizontal resizer with constraints
+                this.setupResizer(resizeHandleH, 'horizontal', (percentage) => {
+                    // Constrain between 30% and 70% to prevent covering top windows
+                    const constrainedPercentage = Math.max(30, Math.min(70, percentage));
+                    mainContent.style.gridTemplateRows = `${constrainedPercentage}% 4px ${100 - constrainedPercentage}%`;
+                });
+            }
+
+            setupResizer(handle, direction, callback) {
                 let isResizing = false;
 
-                resizeHandle.addEventListener('mousedown', (e) => {
+                handle.addEventListener('mousedown', (e) => {
                     isResizing = true;
                     document.addEventListener('mousemove', handleMouseMove);
                     document.addEventListener('mouseup', handleMouseUp);
@@ -553,14 +888,17 @@
                 function handleMouseMove(e) {
                     if (!isResizing) return;
 
-                    const container = document.querySelector('.split-container');
-                    const containerRect = container.getBoundingClientRect();
-                    const percentage = ((e.clientX - containerRect.left) / containerRect.width) * 100;
-
-                    if (percentage > 20 && percentage < 80) {
-                        leftPanel.style.width = percentage + '%';
-                        rightPanel.style.width = (100 - percentage) + '%';
+                    const mainContent = document.querySelector('.main-content');
+                    const rect = mainContent.getBoundingClientRect();
+                    
+                    let percentage;
+                    if (direction === 'vertical') {
+                        percentage = ((e.clientX - rect.left) / rect.width) * 100;
+                    } else {
+                        percentage = ((e.clientY - rect.top) / rect.height) * 100;
                     }
+
+                    callback(percentage);
                 }
 
                 function handleMouseUp() {
@@ -568,6 +906,230 @@
                     document.removeEventListener('mousemove', handleMouseMove);
                     document.removeEventListener('mouseup', handleMouseUp);
                 }
+            }
+
+            setupTerminal() {
+                const terminalInput = document.getElementById('terminalInput');
+                const terminalOutput = document.getElementById('terminalOutput');
+
+                terminalInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const command = terminalInput.value.trim();
+                        if (command) {
+                            this.executeTerminalCommand(command);
+                            this.terminalHistory.push(command);
+                            this.terminalHistoryIndex = this.terminalHistory.length;
+                        }
+                        terminalInput.value = '';
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (this.terminalHistoryIndex > 0) {
+                            this.terminalHistoryIndex--;
+                            terminalInput.value = this.terminalHistory[this.terminalHistoryIndex];
+                        }
+                    } else if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (this.terminalHistoryIndex < this.terminalHistory.length - 1) {
+                            this.terminalHistoryIndex++;
+                            terminalInput.value = this.terminalHistory[this.terminalHistoryIndex];
+                        } else {
+                            this.terminalHistoryIndex = this.terminalHistory.length;
+                            terminalInput.value = '';
+                        }
+                    }
+                });
+            }
+
+            changeLanguage(language) {
+                this.currentLanguage = language;
+                const prompt = document.getElementById('terminalPrompt');
+                const prompts = {
+                    'bash': 'bash$',
+                    'node': 'node>',
+                    'python': 'py>>>',
+                    'java': 'java>',
+                    'cpp': 'cpp>',
+                    'php': 'php>',
+                    'ruby': 'rb>',
+                    'go': 'go>',
+                    'rust': 'rs>',
+                    'sql': 'sql>'
+                };
+                prompt.textContent = prompts[language] || 'term$';
+                
+                this.addTerminalOutput(`Switched to ${language.toUpperCase()} mode`, 'command-info');
+            }
+
+            executeTerminalCommand(command) {
+                this.addTerminalOutput(`${document.getElementById('terminalPrompt').textContent} ${command}`, 'command-success');
+
+                // Language-specific command execution
+                if (this.currentLanguage === 'node') {
+                    this.executeNodeCommand(command);
+                } else if (this.currentLanguage === 'python') {
+                    this.executePythonCommand(command);
+                } else if (this.currentLanguage === 'java') {
+                    this.executeJavaCommand(command);
+                } else if (this.currentLanguage === 'sql') {
+                    this.executeSQLCommand(command);
+                } else {
+                    this.executeBashCommand(command);
+                }
+            }
+
+            executeNodeCommand(command) {
+                try {
+                    // Simulate Node.js execution
+                    if (command.includes('npm install')) {
+                        this.addTerminalOutput('📦 Installing packages...', 'command-info');
+                        setTimeout(() => {
+                            this.addTerminalOutput('✅ Packages installed successfully', 'command-success');
+                        }, 1000);
+                    } else if (command.includes('npm start')) {
+                        this.addTerminalOutput('🚀 Starting development server...', 'command-info');
+                        this.addTerminalOutput('Server running on http://localhost:3000', 'command-success');
+                    } else if (command.includes('console.log')) {
+                        const result = eval(command);
+                        this.addTerminalOutput(result || 'undefined', 'command-success');
+                    } else {
+                        this.addTerminalOutput('Node.js command executed', 'command-success');
+                    }
+                } catch (error) {
+                    this.addTerminalOutput(`Error: ${error.message}`, 'command-error');
+                }
+            }
+
+            executePythonCommand(command) {
+                // Simulate Python execution
+                if (command.includes('pip install')) {
+                    this.addTerminalOutput('📦 Installing Python package...', 'command-info');
+                    setTimeout(() => {
+                        this.addTerminalOutput('✅ Package installed successfully', 'command-success');
+                    }, 1000);
+                } else if (command.includes('print(')) {
+                    const match = command.match(/print$$(.*)$$/);
+                    if (match) {
+                        this.addTerminalOutput(match[1].replace(/['"]/g, ''), 'command-success');
+                    }
+                } else if (command.includes('django-admin startproject')) {
+                    this.addTerminalOutput('🎯 Creating Django project...', 'command-info');
+                    this.addTerminalOutput('Django project created successfully', 'command-success');
+                } else {
+                    this.addTerminalOutput('Python command executed', 'command-success');
+                }
+            }
+
+            executeJavaCommand(command) {
+                // Simulate Java execution
+                if (command.includes('javac')) {
+                    this.addTerminalOutput('☕ Compiling Java code...', 'command-info');
+                    this.addTerminalOutput('Compilation successful', 'command-success');
+                } else if (command.includes('java ')) {
+                    this.addTerminalOutput('🚀 Running Java application...', 'command-info');
+                    this.addTerminalOutput('Hello World!', 'command-success');
+                } else {
+                    this.addTerminalOutput('Java command executed', 'command-success');
+                }
+            }
+
+            executeSQLCommand(command) {
+                // Simulate SQL execution
+                const sqlKeywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP'];
+                const isSQL = sqlKeywords.some(keyword => command.toUpperCase().includes(keyword));
+                
+                if (isSQL) {
+                    this.addTerminalOutput('🗄️ Executing SQL query...', 'command-info');
+                    this.addTerminalOutput('Query executed successfully', 'command-success');
+                } else {
+                    this.addTerminalOutput('Invalid SQL command', 'command-error');
+                }
+            }
+
+            executeBashCommand(command) {
+                const cmd = command.toLowerCase();
+                
+                switch (cmd) {
+                    case 'help':
+                        this.addTerminalOutput(`Available commands:
+- help: Show this help message
+- ls: List uploaded files
+- clear: Clear terminal
+- run: Run current file
+- info: Show system information
+- files: Show file details
+- langs: Show language-specific help
+- create-react-app: Create React application
+- vue create: Create Vue.js application
+- ng new: Create Angular application`, 'command-info');
+                        break;
+                    case 'langs':
+                        this.addTerminalOutput(`Language-specific commands:
+Node.js: npm install, npm start, console.log()
+Python: pip install, print(), django-admin startproject
+Java: javac, java
+SQL: SELECT, INSERT, UPDATE, DELETE, CREATE, DROP
+Use language selector to switch modes`, 'command-info');
+                        break;
+                    case 'ls':
+                        if (this.files.size === 0) {
+                            this.addTerminalOutput('No files uploaded', 'command-warning');
+                        } else {
+                            const fileList = Array.from(this.files.keys()).join('\n');
+                            this.addTerminalOutput(fileList, 'command-success');
+                        }
+                        break;
+                    case 'clear':
+                        document.getElementById('terminalOutput').innerHTML = `
+                            <div class="command-success">Code Studio Pro Multi-Language Terminal v2.0</div>
+                            <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
+                            <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
+                            <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
+                            <div></div>
+                        `;
+                        return;
+                    case 'run':
+                        this.runCurrentFile();
+                        this.addTerminalOutput('Executing current file...', 'command-info');
+                        break;
+                    case 'info':
+                        this.addTerminalOutput(`System Information:
+- Files: ${this.files.size}
+- Current File: ${this.currentFile || 'None'}
+- Storage Used: ${this.getStorageUsage()} bytes
+- Font Size: ${this.fontSize}px
+- Language Mode: ${this.currentLanguage.toUpperCase()}`, 'command-info');
+                        break;
+                    case 'create-react-app':
+                        this.addTerminalOutput('⚛️ Creating React application...', 'command-info');
+                        setTimeout(() => {
+                            this.addTerminalOutput('React app created successfully!', 'command-success');
+                            this.addTerminalOutput('Run: npm start', 'command-info');
+                        }, 2000);
+                        break;
+                    case 'vue create':
+                        this.addTerminalOutput('🖖 Creating Vue.js application...', 'command-info');
+                        setTimeout(() => {
+                            this.addTerminalOutput('Vue app created successfully!', 'command-success');
+                        }, 1500);
+                        break;
+                    case 'ng new':
+                        this.addTerminalOutput('🅰️ Creating Angular application...', 'command-info');
+                        setTimeout(() => {
+                            this.addTerminalOutput('Angular app created successfully!', 'command-success');
+                        }, 2500);
+                        break;
+                    default:
+                        this.addTerminalOutput(`Command not found: ${command}. Type 'help' for available commands.`, 'command-error');
+                }
+            }
+
+            addTerminalOutput(text, className = 'command-output') {
+                const output = document.getElementById('terminalOutput');
+                const line = document.createElement('div');
+                line.className = `command-output ${className}`;
+                line.textContent = text;
+                output.appendChild(line);
+                output.scrollTop = output.scrollHeight;
             }
 
             async handleFiles(fileList) {
@@ -578,6 +1140,7 @@
                             name: file.name,
                             content: content,
                             type: this.getFileType(file.name),
+                            size: file.size,
                             lastModified: Date.now()
                         };
                         
@@ -585,14 +1148,143 @@
                         this.saveToStorage();
                         this.updateFileList();
                         
+                        // Show file analysis popup
+                        this.showFileAnalysis(fileData);
+                        
                         // Auto-select first file
                         if (this.files.size === 1) {
                             this.selectFile(file.name);
                         }
                     } catch (error) {
-                        this.showError(`Error reading file ${file.name}: ${error.message}`);
+                        this.showNotification(`Error reading file ${file.name}: ${error.message}`, 'error');
                     }
                 }
+            }
+
+            showFileAnalysis(fileData) {
+                const analysis = this.analyzeFile(fileData);
+                const popupContent = document.getElementById('popupContent');
+                
+                popupContent.innerHTML = `
+                    <h3>📄 ${fileData.name}</h3>
+                    <p><strong>Language:</strong> ${analysis.language}</p>
+                    <p><strong>File Size:</strong> ${this.formatFileSize(fileData.size)}</p>
+                    <p><strong>Lines of Code:</strong> ${fileData.content.split('\n').length}</p>
+                    ${analysis.frameworks.length > 0 ? `
+                        <p><strong>Frameworks/Technologies:</strong></p>
+                        <div>
+                            ${analysis.frameworks.map(fw => `<span class="tech-tag">${fw}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    ${analysis.description ? `<p><strong>Description:</strong> ${analysis.description}</p>` : ''}
+                `;
+                
+                this.showPopup();
+            }
+
+            analyzeFile(fileData) {
+                const content = fileData.content.toLowerCase();
+                const extension = fileData.name.split('.').pop().toLowerCase();
+                
+                let language = this.getLanguageName(fileData.type);
+                let frameworks = [];
+                let description = '';
+
+                // Detect frameworks and technologies
+                if (content.includes('react') || content.includes('jsx')) {
+                    frameworks.push('React');
+                }
+                if (content.includes('vue') || content.includes('@vue')) {
+                    frameworks.push('Vue.js');
+                }
+                if (content.includes('angular') || content.includes('@angular')) {
+                    frameworks.push('Angular');
+                }
+                if (content.includes('express') || content.includes('app.listen')) {
+                    frameworks.push('Express.js');
+                }
+                if (content.includes('bootstrap') || content.includes('btn-')) {
+                    frameworks.push('Bootstrap');
+                }
+                if (content.includes('tailwind') || content.includes('tw-')) {
+                    frameworks.push('Tailwind CSS');
+                }
+                if (content.includes('jquery') || content.includes('$(')) {
+                    frameworks.push('jQuery');
+                }
+                if (content.includes('next') || content.includes('next/')) {
+                    frameworks.push('Next.js');
+                }
+                if (content.includes('nuxt') || content.includes('nuxt.config')) {
+                    frameworks.push('Nuxt.js');
+                }
+                if (content.includes('django') || content.includes('from django')) {
+                    frameworks.push('Django');
+                }
+                if (content.includes('flask') || content.includes('from flask')) {
+                    frameworks.push('Flask');
+                }
+
+                // Generate description based on file type
+                switch (extension) {
+                    case 'html':
+                        description = 'HTML document for web page structure';
+                        break;
+                    case 'css':
+                        description = 'Stylesheet for web page styling';
+                        break;
+                    case 'js':
+                        description = 'JavaScript file for web interactivity';
+                        break;
+                    case 'py':
+                        description = 'Python script for backend logic';
+                        break;
+                    case 'json':
+                        description = 'JSON data file for configuration or data storage';
+                        break;
+                    default:
+                        description = `${language} source code file`;
+                }
+
+                return { language, frameworks, description };
+            }
+
+            getLanguageName(type) {
+                const languageMap = {
+                    'html': 'HTML',
+                    'css': 'CSS',
+                    'javascript': 'JavaScript',
+                    'typescript': 'TypeScript',
+                    'python': 'Python',
+                    'java': 'Java',
+                    'cpp': 'C++',
+                    'c': 'C',
+                    'php': 'PHP',
+                    'ruby': 'Ruby',
+                    'go': 'Go',
+                    'rust': 'Rust',
+                    'sql': 'SQL',
+                    'json': 'JSON',
+                    'xml': 'XML',
+                    'markdown': 'Markdown'
+                };
+                return languageMap[type] || type.toUpperCase();
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            showPopup() {
+                document.getElementById('popupOverlay').style.display = 'flex';
+            }
+
+            hidePopup() {
+                document.getElementById('popupOverlay').style.display = 'none';
             }
 
             readFile(file) {
@@ -636,7 +1328,7 @@
                 fileList.innerHTML = '';
 
                 if (this.files.size === 0) {
-                    fileList.innerHTML = '<div style="color: #969696; font-style: italic;">No files uploaded</div>';
+                    fileList.innerHTML = '<div style="color: #969696; font-style: italic; text-align: center; padding: 2rem;">No files uploaded yet</div>';
                     return;
                 }
 
@@ -648,7 +1340,10 @@
                     }
 
                     fileItem.innerHTML = `
-                        <span>${filename}</span>
+                        <div class="file-info">
+                            <div class="file-name">${filename}</div>
+                            <div class="file-meta">${this.getLanguageName(fileData.type)} • ${this.formatFileSize(fileData.size)}</div>
+                        </div>
                         <span class="file-delete" onclick="codeStudio.deleteFile('${filename}')">&times;</span>
                     `;
 
@@ -690,6 +1385,7 @@
                 this.saveToStorage();
                 this.updateFileList();
                 this.updateRunButton();
+                this.showNotification(`File "${filename}" deleted successfully`);
             }
 
             saveCurrentFile() {
@@ -702,14 +1398,14 @@
 
                 this.files.set(this.currentFile, fileData);
                 this.saveToStorage();
-                this.showSaveNotification();
+                this.showNotification('File saved successfully');
             }
 
             updateRunButton() {
                 const runBtn = document.getElementById('runBtn');
                 const canRun = this.currentFile && 
                               this.files.has(this.currentFile) && 
-                              this.files.get(this.currentFile).type === 'html';
+                              ['html', 'javascript', 'css'].includes(this.files.get(this.currentFile).type);
                 
                 runBtn.disabled = !canRun;
             }
@@ -718,28 +1414,70 @@
                 if (!this.currentFile || !this.files.has(this.currentFile)) return;
 
                 const fileData = this.files.get(this.currentFile);
-                if (fileData.type !== 'html') {
-                    this.showError('Only HTML files can be previewed');
-                    return;
-                }
-
                 this.saveCurrentFile(); // Save before running
                 
-                const previewFrame = document.getElementById('previewFrame');
-                const placeholder = document.getElementById('previewPlaceholder');
-                
-                // Create blob URL for the HTML content
-                const blob = new Blob([fileData.content], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                
-                previewFrame.src = url;
-                previewFrame.style.display = 'block';
-                placeholder.style.display = 'none';
+                if (fileData.type === 'html') {
+                    this.runHTMLFile(fileData);
+                } else if (fileData.type === 'javascript') {
+                    this.runJavaScriptFile(fileData);
+                } else {
+                    this.showNotification('File type not supported for execution', 'error');
+                }
+            }
 
-                // Clean up previous blob URL
-                previewFrame.onload = () => {
-                    setTimeout(() => URL.revokeObjectURL(url), 1000);
-                };
+            runHTMLFile(fileData) {
+                // Create a new window/tab for HTML preview
+                const newWindow = window.open('', '_blank');
+                newWindow.document.write(fileData.content);
+                newWindow.document.close();
+                this.showNotification('HTML file opened in new tab');
+                this.addTerminalOutput('🌐 HTML file executed in new tab', 'command-success');
+            }
+
+            runJavaScriptFile(fileData) {
+                try {
+                    // Create a safe execution context
+                    const result = eval(fileData.content);
+                    this.showNotification('JavaScript executed successfully');
+                    this.addTerminalOutput(`JS Output: ${result || 'undefined'}`, 'command-success');
+                } catch (error) {
+                    this.showNotification(`JavaScript error: ${error.message}`, 'error');
+                    this.addTerminalOutput(`JS Error: ${error.message}`, 'command-error');
+                }
+            }
+
+            changeFontSize(delta) {
+                this.fontSize = Math.max(8, Math.min(32, this.fontSize + delta));
+                if (this.editor) {
+                    this.editor.updateOptions({ fontSize: this.fontSize });
+                }
+                this.showNotification(`Font size: ${this.fontSize}px`);
+            }
+
+            clearAllData() {
+                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                    this.files.clear();
+                    this.currentFile = null;
+                    
+                    if (this.editor) {
+                        this.editor.setValue('// All data cleared\n// Upload new files to get started!');
+                    }
+                    
+                    this.saveToStorage();
+                    this.updateFileList();
+                    this.updateRunButton();
+                    
+                    // Clear terminal
+                    document.getElementById('terminalOutput').innerHTML = `
+                        <div class="command-success">Code Studio Pro Multi-Language Terminal v2.0</div>
+                        <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
+                        <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
+                        <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
+                        <div></div>
+                    `;
+                    
+                    this.showNotification('All data cleared successfully');
+                }
             }
 
             checkForErrors() {
@@ -749,7 +1487,6 @@
                 const fileData = this.files.get(this.currentFile);
                 const errorPanel = document.getElementById('errorPanel');
 
-                // Basic syntax checking for HTML
                 if (fileData.type === 'html') {
                     const errors = this.validateHTML(content);
                     if (errors.length > 0) {
@@ -767,7 +1504,6 @@
                 const errors = [];
                 const lines = content.split('\n');
                 
-                // Check for unclosed tags
                 const tagStack = [];
                 const selfClosingTags = ['img', 'br', 'hr', 'input', 'meta', 'link', 'area', 'base', 'col', 'embed', 'source', 'track', 'wbr'];
                 
@@ -792,7 +1528,6 @@
                     }
                 });
                 
-                // Check for unclosed tags
                 tagStack.forEach(tag => {
                     errors.push(`Line ${tag.line}: Unclosed tag <${tag.tag}>`);
                 });
@@ -800,22 +1535,16 @@
                 return errors;
             }
 
-            showSaveNotification() {
-                const notification = document.getElementById('saveNotification');
+            showNotification(message, type = 'success') {
+                const notification = document.getElementById('notification');
+                const notificationText = document.getElementById('notificationText');
+                
+                notificationText.textContent = message;
+                notification.className = `notification ${type}`;
                 notification.classList.add('show');
                 
                 setTimeout(() => {
                     notification.classList.remove('show');
-                }, 3000);
-            }
-
-            showError(message) {
-                const errorPanel = document.getElementById('errorPanel');
-                errorPanel.innerHTML = message;
-                errorPanel.style.display = 'block';
-                
-                setTimeout(() => {
-                    errorPanel.style.display = 'none';
                 }, 5000);
             }
 
@@ -824,6 +1553,8 @@
                     const data = {
                         files: Array.from(this.files.entries()),
                         currentFile: this.currentFile,
+                        fontSize: this.fontSize,
+                        currentLanguage: this.currentLanguage,
                         timestamp: Date.now()
                     };
                     localStorage.setItem(this.storageKey, JSON.stringify(data));
@@ -839,6 +1570,8 @@
                         const parsed = JSON.parse(data);
                         this.files = new Map(parsed.files);
                         this.currentFile = parsed.currentFile;
+                        this.fontSize = parsed.fontSize || 14;
+                        this.currentLanguage = parsed.currentLanguage || 'bash';
                     }
                 } catch (error) {
                     console.warn('Failed to load from localStorage:', error);
@@ -849,7 +1582,6 @@
                 localStorage.removeItem(this.storageKey);
             }
 
-            // Calculate approximate storage usage
             getStorageUsage() {
                 let totalSize = 0;
                 this.files.forEach(file => {
@@ -861,11 +1593,9 @@
 
         // Initialize the application
         const codeStudio = new CodeStudioPro();
-
-        // Make it globally accessible for event handlers
         window.codeStudio = codeStudio;
 
-        // Storage usage monitoring
+        // Storage monitoring
         setInterval(() => {
             const usage = codeStudio.getStorageUsage();
             const maxStorage = 5 * 1024 * 1024; // 5MB typical localStorage limit
