@@ -65,12 +65,21 @@
             cursor: not-allowed;
         }
 
+        /* Updated button colors */
         .btn.danger {
-            background: #f48771;
+            background: #FF0000; /* Changed to red */
         }
 
         .btn.danger:hover {
-            background: #e74c3c;
+            background: #CC0000;
+        }
+
+        .btn.run {
+            background: #32CD32; /* Changed to lime green */
+        }
+
+        .btn.run:hover {
+            background: #228B22;
         }
 
         .font-controls {
@@ -504,6 +513,64 @@
             background: #ff6b6b;
         }
 
+        /* Clear Data Confirmation Popup */
+        .clear-data-popup {
+            background: #2d2d30;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            color: white;
+            position: relative;
+            text-align: center;
+        }
+
+        .clear-data-popup h3 {
+            color: #FF0000;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .clear-data-popup p {
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: #cccccc;
+        }
+
+        .clear-data-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .clear-data-btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .clear-data-btn.cancel {
+            background: #37373d;
+            color: white;
+        }
+
+        .clear-data-btn.cancel:hover {
+            background: #464647;
+        }
+
+        .clear-data-btn.delete {
+            background: #FF0000;
+            color: white;
+        }
+
+        .clear-data-btn.delete:hover {
+            background: #CC0000;
+        }
+
         /* Footer */
         .footer {
             background: #2d2d30;
@@ -582,7 +649,7 @@
         <span id="notificationText">File saved successfully!</span>
     </div>
 
-    <!-- Popup Modal -->
+    <!-- File Analysis Popup Modal -->
     <div id="popupOverlay" class="popup-overlay">
         <div class="popup">
             <div class="popup-header">
@@ -591,6 +658,18 @@
             </div>
             <div id="popupContent" class="popup-content">
                 <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Clear Data Confirmation Popup -->
+    <div id="clearDataOverlay" class="popup-overlay">
+        <div class="clear-data-popup">
+            <h3>⚠️ Confirm Data Deletion</h3>
+            <p>After performing this action, all files uploaded to the site will be permanently deleted.</p>
+            <div class="clear-data-buttons">
+                <button id="cancelClearData" class="clear-data-btn cancel">Cancel</button>
+                <button id="confirmClearData" class="clear-data-btn delete">Delete</button>
             </div>
         </div>
     </div>
@@ -604,7 +683,7 @@
                 <button id="fontIncrease" class="font-btn">+A</button>
             </div>
             <button id="clearBtn" class="btn danger">Clear Data</button>
-            <button id="runBtn" class="btn" disabled>
+            <button id="runBtn" class="btn run" disabled>
                 <span id="runBtnText">Run</span>
             </button>
         </div>
@@ -866,6 +945,11 @@
                 const fontDecrease = document.getElementById('fontDecrease');
                 const popupClose = document.getElementById('popupClose');
                 const languageSelector = document.getElementById('languageSelector');
+                
+                // Clear Data Confirmation popup elements
+                const cancelClearData = document.getElementById('cancelClearData');
+                const confirmClearData = document.getElementById('confirmClearData');
+                const clearDataOverlay = document.getElementById('clearDataOverlay');
 
                 // Drag and drop
                 dropZone.addEventListener('dragover', (e) => {
@@ -897,8 +981,26 @@
                     this.runCurrentFile();
                 });
 
+                // Clear Data button - show confirmation popup
                 clearBtn.addEventListener('click', () => {
+                    this.showClearDataConfirmation();
+                });
+
+                // Clear Data confirmation popup handlers
+                cancelClearData.addEventListener('click', () => {
+                    this.hideClearDataConfirmation();
+                });
+
+                confirmClearData.addEventListener('click', () => {
+                    this.hideClearDataConfirmation();
                     this.clearAllData();
+                });
+
+                // Close popup when clicking overlay
+                clearDataOverlay.addEventListener('click', (e) => {
+                    if (e.target.id === 'clearDataOverlay') {
+                        this.hideClearDataConfirmation();
+                    }
                 });
 
                 // Font controls
@@ -925,6 +1027,14 @@
                         this.hidePopup();
                     }
                 });
+            }
+
+            showClearDataConfirmation() {
+                document.getElementById('clearDataOverlay').style.display = 'flex';
+            }
+
+            hideClearDataConfirmation() {
+                document.getElementById('clearDataOverlay').style.display = 'none';
             }
 
             setupEditor() {
@@ -1251,7 +1361,8 @@
 - Protected patterns: passwords, api_keys, tokens, secrets, hashes
 - Environment variable protection
 - JWT token masking
-- Database credential protection`, 'command-security');
+- Database credential protection
+- Preview page security masking`, 'command-security');
                         break;
                     case 'langs':
                         this.addTerminalOutput(`Language-specific commands:
@@ -1676,15 +1787,15 @@ Use language selector to switch modes`, 'command-info');
             }
 
             runHTMLFile(fileData) {
-                // Use original content for execution, not masked version
+                // Use masked content for preview to ensure sensitive data is hidden
                 const newWindow = window.open('', '_blank');
-                newWindow.document.write(fileData.content);
+                newWindow.document.write(fileData.maskedContent);
                 newWindow.document.close();
                 this.showNotification('HTML file opened in new tab');
-                this.addTerminalOutput('🌐 HTML file executed in new tab', 'command-success');
+                this.addTerminalOutput('🌐 HTML file executed in new tab with security masking', 'command-success');
                 
                 if (fileData.hasSensitiveData) {
-                    this.addTerminalOutput('⚠️ Warning: Executed file contains sensitive data', 'command-warning');
+                    this.addTerminalOutput('🔒 Security: Sensitive data masked in preview', 'command-security');
                 }
             }
 
@@ -1713,32 +1824,30 @@ Use language selector to switch modes`, 'command-info');
             }
 
             clearAllData() {
-                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-                    this.files.clear();
-                    this.currentFile = null;
-                    
-                    if (this.editor) {
-                        this.editor.setValue('// All data cleared\n// Upload new files to get started!');
-                    }
-                    
-                    document.getElementById('securityAlert').style.display = 'none';
-                    
-                    this.saveToStorage();
-                    this.updateFileList();
-                    this.updateRunButton();
-                    
-                    // Clear terminal
-                    document.getElementById('terminalOutput').innerHTML = `
-                        <div class="command-success">Code Studio Pro Multi-Language Terminal v2.0</div>
-                        <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
-                        <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
-                        <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
-                        <div class="command-security">🔒 Security: Sensitive data automatically masked with asterisks</div>
-                        <div></div>
-                    `;
-                    
-                    this.showNotification('All data cleared successfully');
+                this.files.clear();
+                this.currentFile = null;
+                
+                if (this.editor) {
+                    this.editor.setValue('// All data cleared\n// Upload new files to get started!');
                 }
+                
+                document.getElementById('securityAlert').style.display = 'none';
+                
+                this.saveToStorage();
+                this.updateFileList();
+                this.updateRunButton();
+                
+                // Clear terminal
+                document.getElementById('terminalOutput').innerHTML = `
+                    <div class="command-success">Code Studio Pro Multi-Language Terminal v2.0</div>
+                    <div class="command-info">Supports: JavaScript, Python, Java, C++, PHP, Ruby, Go, Rust, SQL and more</div>
+                    <div class="command-info">Web Frameworks: React, Vue, Angular, Express, Django, Flask, Laravel</div>
+                    <div class="command-warning">Type 'help' for available commands or 'langs' for language-specific help</div>
+                    <div class="command-security">🔒 Security: Sensitive data automatically masked with asterisks</div>
+                    <div></div>
+                `;
+                
+                this.showNotification('All data cleared successfully');
             }
 
             checkForErrors() {
